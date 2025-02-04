@@ -1,6 +1,5 @@
 import Phaser from 'phaser'
-import { sizes, speedY } from './config'
-
+import { sizes } from './config'
 
 // GameScene class
 // It contains the game logic such as player movement, collision detection, etc.
@@ -9,42 +8,125 @@ class GameScene extends Phaser.Scene {
     constructor() {
         super("scene-game")
         this.player
-        this.playerSpeed = speedY + 50
+        this.playerSpeed = 300 + 50
+        this.isAttacking = false
+        this.lastDirection = 'right';
     }
 
     // This method preloads the assets
     preload() {
         this.load.image("bg", "/assets/bg.png")
-        this.load.image("basket", "/assets/basket.png")
+        // Preload player animations
+        this.load.spritesheet('playerIdle', "/assets/knight/Idle2.png", { frameWidth: 55, frameHeight: 64 });
+        this.load.spritesheet('playerWalkLeft', "/assets/knight/WalkLeft2.png", { frameWidth: 57.75, frameHeight: 64 });
+        this.load.spritesheet('playerWalkRight', "/assets/knight/WalkRight2.png", { frameWidth: 57.75, frameHeight: 64 });
+        this.load.spritesheet('playerAttackRight', "/assets/knight/Attack 2 Right.png", { frameWidth: 65, frameHeight: 64 });
+        this.load.spritesheet('playerAttackLeft', "/assets/knight/Attack 2 Left.png", { frameWidth: 65, frameHeight: 64 });
     }
 
     // This method creates the game objects
     create() {
-        this.add.image(0, 0, "bg").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height)
-
+        this.add.image(0, 0, "bg").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
         // Player creation (With physics)
-        this.player = this.physics.add.image(sizes.width * 0.45, sizes.height * 0.87, "basket").setOrigin(0, 0)
+        this.player = this.physics.add.sprite(sizes.width / 2, sizes.height / 2, 'playerIdle')
+        this.player.setScale(1.25)
         this.player.setImmovable(true)
         this.player.body.allowGravity = false
         this.player.setCollideWorldBounds(true)
 
+        // Create player animations
+        this.anims.create({
+            key: 'idle',
+            frames: this.anims.generateFrameNumbers('playerIdle', { start: 0, end: 3 }),
+            frameRate: 4,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'walkLeft',
+            frames: this.anims.generateFrameNumbers('playerWalkLeft', { start: 0, end: 7 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'walkRight',
+            frames: this.anims.generateFrameNumbers('playerWalkRight', { start: 0, end: 7 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'attackRight',
+            frames: this.anims.generateFrameNumbers('playerAttackRight', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: 0
+        });
+        this.anims.create({
+            key: 'attackLeft',
+            frames: this.anims.generateFrameNumbers('playerAttackLeft', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: 0
+        });
+
         // Create cursor keys for player movement
         this.cursor = this.input.keyboard.createCursorKeys();
+        // Create WASD keys for player movement
+        this.wasd = this.input.keyboard.addKeys({
+            up: Phaser.Input.Keyboard.KeyCodes.W,
+            down: Phaser.Input.Keyboard.KeyCodes.S,
+            left: Phaser.Input.Keyboard.KeyCodes.A,
+            right: Phaser.Input.Keyboard.KeyCodes.D
+        });
     }
 
     // This method is called every frame and updates the game logic and objects
     update() {
-        const { left, right } = this.cursor;
+        const { left, right, up, down, space } = this.cursor;
+        const { left: a, right: d, up: w, down: s } = this.wasd;
 
-        // Player movement
-        // setVelocityX is used to move the player horizontally
-        // setVelocityY is used to move the player vertically
-        if (left.isDown) {
-            this.player.setVelocityX(-this.playerSpeed);
-        } else if (right.isDown) {
-            this.player.setVelocityX(this.playerSpeed);
-        } else {
-            this.player.setVelocityX(0);
+        if (!this.isAttacking) {
+            // Player movement
+            if (left.isDown || a.isDown) {
+                this.player.setVelocityX(-this.playerSpeed);
+                this.player.anims.play('walkLeft', true);
+                this.lastDirection = 'left'; // Actualiza la última dirección
+            } else if (right.isDown || d.isDown) {
+                this.player.setVelocityX(this.playerSpeed);
+                this.player.anims.play('walkRight', true);
+                this.lastDirection = 'right'; // Actualiza la última dirección
+            } else {
+                this.player.setVelocityX(0);
+            }
+
+            if (up.isDown || w.isDown) {
+                this.player.setVelocityY(-this.playerSpeed);
+                if (!left.isDown && !right.isDown && !a.isDown && !d.isDown) {
+                    this.player.anims.play(this.lastDirection === 'left' ? 'walkLeft' : 'walkRight', true);
+                }
+            } else if (down.isDown || s.isDown) {
+                this.player.setVelocityY(this.playerSpeed);
+                if (!left.isDown && !right.isDown && !a.isDown && !d.isDown) {
+                    this.player.anims.play(this.lastDirection === 'left' ? 'walkLeft' : 'walkRight', true);
+                }
+            } else {
+                this.player.setVelocityY(0);
+                if (this.player.body.velocity.x === 0) {
+                    this.player.anims.play('idle', true);
+                }
+            }
+        }
+
+        // Player attack
+        if (Phaser.Input.Keyboard.JustDown(space)) {
+            this.isAttacking = true;
+            // Reproduce la animación de ataque según la última dirección
+            if (this.lastDirection === 'left') {
+                this.player.anims.play('attackLeft', true);
+            } else {
+                this.player.anims.play('attackRight', true);
+            }
+            this.player.once('animationcomplete', () => {
+                this.isAttacking = false;
+                this.player.anims.play('idle', true);
+            });
         }
     }
 }
