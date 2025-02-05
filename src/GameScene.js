@@ -8,7 +8,7 @@ class GameScene extends Phaser.Scene {
     constructor() {
         super("scene-game")
         this.player
-        this.playerSpeed = 300 + 50
+        this.playerSpeed = 300
         this.isAttacking = false
         this.lastDirection = 'right';
     }
@@ -23,6 +23,7 @@ class GameScene extends Phaser.Scene {
         this.load.spritesheet('playerWalkRight', "/assets/Soldier/Soldier/Soldier-Walk-Right.png", { frameWidth: 100, frameHeight: 100 });
         this.load.spritesheet('playerAttackRight', "/assets/Soldier/Soldier/Soldier-Attack-Right.png", { frameWidth: 100, frameHeight: 100 });
         this.load.spritesheet('playerAttackLeft', "/assets/Soldier/Soldier/Soldier-Attack-Left.png", { frameWidth: 100, frameHeight: 100 });
+        this.load.spritesheet('playerAttackTop', "/assets/Soldier/Soldier/Soldier-Attack-Top.png", { frameWidth: 100, frameHeight: 100 });
     }
 
     // This method creates the game objects
@@ -71,6 +72,12 @@ class GameScene extends Phaser.Scene {
         this.anims.create({
             key: 'attackLeft',
             frames: this.anims.generateFrameNumbers('playerAttackLeft', { start: 0, end: 5 }),
+            frameRate: 10,
+            repeat: 0
+        });
+        this.anims.create({
+            key: 'attackTop',
+            frames: this.anims.generateFrameNumbers('playerAttackTop', { start: 0, end: 5 }),
             frameRate: 10,
             repeat: 0
         });
@@ -163,9 +170,16 @@ class GameScene extends Phaser.Scene {
         // Ataque del jugador
         if (Phaser.Input.Keyboard.JustDown(space)) {
             this.isAttacking = true;
-
-            if (this.lastDirection === 'left' || this.lastDirection === 'top') {
+            if (s.isDown && d.isDown) {
+                // Si se presionan ambas teclas 's' y 'd' al mismo tiempo
+                this.player.anims.play('attackRight', true);
+            } else if (s.isDown && a.isDown) {
+                // Si se presionan ambas teclas 's' y 'a' al mismo tiempo
                 this.player.anims.play('attackLeft', true);
+            } else if (this.lastDirection === 'left' || this.lastDirection === 'down') {
+                this.player.anims.play('attackLeft', true);
+            } else if (this.lastDirection === 'up') {
+                this.player.anims.play('attackTop', true);
             } else {
                 this.player.anims.play('attackRight', true);
             }
@@ -186,23 +200,23 @@ class GameScene extends Phaser.Scene {
                 if (this.lastDirection === 'left' || this.lastDirection === 'right') {
                     hitBoxX = this.lastDirection === 'left' ? this.player.x - 70 : this.player.x + 70;
                     hitBoxY = this.player.y - 9; // Para los ataques horizontales
-                } else if (this.lastDirection === 'top' || this.lastDirection === 'down') {
-                    hitBoxX = this.player.x - 5; // Desplazamiento horizontal
+                } else if (this.lastDirection === 'up' || this.lastDirection === 'down') {
+                    hitBoxX = this.player.x; // Desplazamiento horizontal
 
                     // Ajuste de hitBoxY teniendo en cuenta el tamaño y posición del jugador
-                    if (this.lastDirection === 'top') {
-                        hitBoxY = this.player.y - 50; // Coloca la hitbox encima del jugador
+                    if (this.lastDirection === 'up') {
+                        hitBoxY = this.player.y - 60; // Coloca la hitbox encima del jugador
                     } else if (this.lastDirection === 'down') {
-                        hitBoxY = this.player.y + 50; // Coloca la hitbox debajo del jugador
+                        hitBoxY = this.player.y + 60; // Coloca la hitbox debajo del jugador
                     }
                 }
 
                 // Crear la hitbox
                 hitBox = this.physics.add.sprite(hitBoxX, hitBoxY, null)
-                    .setSize(65, 100)
+                    // .setSize(65, 100)
+                    .setSize(this.lastDirection === 'up' || this.lastDirection === 'down' ? 100 : 65, this.lastDirection === 'up' || this.lastDirection === 'down' ? 65 : 100)
                     .setVisible(false)
                     .setImmovable(true);
-                    console.log(hitBoxX, hitBoxY);
             });
 
             // Destruir la hitbox después de un segundo
