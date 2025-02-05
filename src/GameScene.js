@@ -8,6 +8,7 @@ class GameScene extends Phaser.Scene {
     constructor() {
         super("scene-game")
         this.player
+        this.orc
         this.playerSpeed = 300
         this.isAttacking = false
         this.lastDirection = 'right';
@@ -15,7 +16,7 @@ class GameScene extends Phaser.Scene {
 
     // This method preloads the assets
     preload() {
-        this.load.image("bg", "/assets/bg.png")
+        this.load.image("bg", "/assets/bg-testing.png")
         // Preload player animations
         this.load.spritesheet('playerIdleRight', "/assets/Soldier/Soldier/Soldier-Idle-Right.png", { frameWidth: 100, frameHeight: 100 });
         this.load.spritesheet('playerIdleLeft', "/assets/Soldier/Soldier/Soldier-Idle-Left.png", { frameWidth: 100, frameHeight: 100 });
@@ -24,19 +25,25 @@ class GameScene extends Phaser.Scene {
         this.load.spritesheet('playerAttackRight', "/assets/Soldier/Soldier/Soldier-Attack-Right.png", { frameWidth: 100, frameHeight: 100 });
         this.load.spritesheet('playerAttackLeft', "/assets/Soldier/Soldier/Soldier-Attack-Left.png", { frameWidth: 100, frameHeight: 100 });
         this.load.spritesheet('playerAttackTop', "/assets/Soldier/Soldier/Soldier-Attack-Top.png", { frameWidth: 100, frameHeight: 100 });
+
+        // Preload enemy animations
+        this.load.spritesheet('orcIdle', "/assets/Orc/Orc/Orc-Idle.png", { frameWidth: 100, frameHeight: 100 });
+
+        // Sounds
+        this.load.audio('swordAttackSound1', ['assets/sword-swing-1.ogg']);
     }
 
     // This method creates the game objects
     create() {
         this.add.image(0, 0, "bg").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
-        // Player creation (With physics)
-        this.player = this.physics.add.sprite(sizes.width / 2, sizes.height / 2, 'playerIdle')
-        this.player.setSize(25, 25)
-        this.player.setScale(3)
-        this.player.body.setOffset((100 - 26) / 2, (100 - 30) / 2);
-        this.player.setImmovable(true)
-        this.player.body.allowGravity = false
-        this.player.setCollideWorldBounds(true)
+
+        // Create enemy animations
+        this.anims.create({
+            key: 'orcIdle',
+            frames: this.anims.generateFrameNumbers('orcIdle', { start: 0, end: 5 }),
+            frameRate: 8,
+            repeat: -1
+        })
 
         // Create player animations
         this.anims.create({
@@ -82,6 +89,23 @@ class GameScene extends Phaser.Scene {
             repeat: 0
         });
 
+        // Player creation (With physics)
+        this.player = this.physics.add.sprite(sizes.width / 2, sizes.height / 2)
+        this.player.setSize(16, 20)
+        this.player.setScale(2.5)
+        this.player.body.setOffset((100 - 17) / 2, (100 - 24) / 2);
+        this.player.setImmovable(true)
+        this.player.body.allowGravity = false
+        this.player.setCollideWorldBounds(true)
+
+        // Enemy creation (With physics)
+        this.orc = this.physics.add.sprite(sizes.width * 0.8, sizes.height * 0.8).play('orcIdle')
+        this.orc.setSize(16, 18)
+        this.orc.setScale(2.5)
+        this.orc.body.setOffset((100 - 15) / 2, (100 - 19) / 2);
+        this.player.setImmovable(true)
+        this.player.body.allowGravity = false
+
         // Create cursor keys for player movement
         this.cursor = this.input.keyboard.createCursorKeys();
         // Create WASD keys for player movement
@@ -98,16 +122,16 @@ class GameScene extends Phaser.Scene {
         const { left, right, up, down, space } = this.cursor;
         const { left: a, right: d, up: w, down: s } = this.wasd;
 
-        // Movimiento solo si no está atacando
+        // Player movement animation
         if (!this.isAttacking) {
             if (left.isDown || a.isDown) {
                 this.player.setVelocityX(-this.playerSpeed);
                 this.player.anims.play('walkLeft', true);
-                this.lastDirection = 'left';  // Se actualiza la dirección cuando el jugador se mueve a la izquierda
+                this.lastDirection = 'left';
             } else if (right.isDown || d.isDown) {
                 this.player.setVelocityX(this.playerSpeed);
                 this.player.anims.play('walkRight', true);
-                this.lastDirection = 'right';  // Se actualiza la dirección cuando el jugador se mueve a la derecha
+                this.lastDirection = 'right';
             } else {
                 this.player.setVelocityX(0);
             }
@@ -167,14 +191,13 @@ class GameScene extends Phaser.Scene {
             }
         }
 
-        // Ataque del jugador
-        if (Phaser.Input.Keyboard.JustDown(space)) {
+        if ((Phaser.Input.Keyboard.JustDown(space) && !this.isAttacking) || (space.isDown && !this.isAttacking)) {
             this.isAttacking = true;
+
+            // Attatck animation
             if (s.isDown && d.isDown) {
-                // Si se presionan ambas teclas 's' y 'd' al mismo tiempo
                 this.player.anims.play('attackRight', true);
             } else if (s.isDown && a.isDown) {
-                // Si se presionan ambas teclas 's' y 'a' al mismo tiempo
                 this.player.anims.play('attackLeft', true);
             } else if (this.lastDirection === 'left' || this.lastDirection === 'down') {
                 this.player.anims.play('attackLeft', true);
@@ -184,43 +207,96 @@ class GameScene extends Phaser.Scene {
                 this.player.anims.play('attackRight', true);
             }
 
-            // Asegura que al completar el ataque vuelva a la animación correcta
+            // Ensure that after completing the attack, it returns to the correct animation
             this.player.once('animationcomplete', () => {
                 this.isAttacking = false;
             });
 
+            this.sound.play('swordAttackSound1');
 
+            // Attack hitbox variables
+            let hitBox = null;
+            let hitBoxX = null;
+            let hitBoxY = null;
+            let hitBoxWidth = 50;
+            let hitBoxHeight = 90;
 
-            // Crea una hitbox frente al jugador
-            var hitBox = null;
-            var hitBoxX = null;
-            var hitBoxY = null;
-
-            this.time.delayedCall(240, () => {
-                if (this.lastDirection === 'left' || this.lastDirection === 'right') {
-                    hitBoxX = this.lastDirection === 'left' ? this.player.x - 70 : this.player.x + 70;
-                    hitBoxY = this.player.y - 9; // Para los ataques horizontales
-                } else if (this.lastDirection === 'up' || this.lastDirection === 'down') {
-                    hitBoxX = this.player.x; // Desplazamiento horizontal
-
-                    // Ajuste de hitBoxY teniendo en cuenta el tamaño y posición del jugador
-                    if (this.lastDirection === 'up') {
-                        hitBoxY = this.player.y - 60; // Coloca la hitbox encima del jugador
-                    } else if (this.lastDirection === 'down') {
-                        hitBoxY = this.player.y + 60; // Coloca la hitbox debajo del jugador
+            this.time.delayedCall(260, () => {
+                // Diagonal movement (square hitbox)
+                if ((a.isDown && s.isDown) || (a.isDown && w.isDown) || (d.isDown && s.isDown) || (d.isDown && w.isDown)) {
+                    hitBoxWidth = 70;
+                    hitBoxHeight = 70;
+                } else {
+                    // Normal movement (rectangular)
+                    if (this.lastDirection === 'up' || this.lastDirection === 'down') {
+                        hitBoxWidth = 90;
+                        hitBoxHeight = 50;
+                    } else {
+                        hitBoxWidth = 50;
+                        hitBoxHeight = 90;
                     }
                 }
 
-                // Crear la hitbox
+                // Position of the hitbox
+                if (s.isDown && a.isDown) {
+                    // Diagonal hit down left
+                    hitBoxX = this.player.x - 50;
+                    hitBoxY = this.player.y + 50;
+                } else if (s.isDown && d.isDown) {
+                    // Diagonal hit down right
+                    hitBoxX = this.player.x + 50;
+                    hitBoxY = this.player.y + 50;
+                } else if (w.isDown && a.isDown) {
+                    // Diagonal hit up left
+                    hitBoxX = this.player.x - 50;
+                    hitBoxY = this.player.y - 50;
+                } else if (w.isDown && d.isDown) {
+                    // Diagonal hit up right
+                    hitBoxX = this.player.x + 50;
+                    hitBoxY = this.player.y - 50;
+                } else if (a.isDown) {
+                    // Hit to the left
+                    hitBoxX = this.player.x - 70;
+                    hitBoxY = this.player.y - 9;
+                } else if (d.isDown) {
+                    // Hit to the right
+                    hitBoxX = this.player.x + 70;
+                    hitBoxY = this.player.y - 9;
+                } else if (w.isDown) {
+                    // Hit up
+                    hitBoxX = this.player.x;
+                    hitBoxY = this.player.y - 70;
+                } else if (s.isDown) {
+                    // Hit down
+                    hitBoxX = this.player.x;
+                    hitBoxY = this.player.y + 70;
+                } else if (this.lastDirection === 'left') {
+                    // Hit to the left
+                    hitBoxX = this.player.x - 45;
+                    hitBoxY = this.player.y - 9;
+                } else if (this.lastDirection === 'right') {
+                    // Hit to the right
+                    hitBoxX = this.player.x + 45;
+                    hitBoxY = this.player.y - 9;
+                } else if (this.lastDirection === 'up') {
+                    // Hit up
+                    hitBoxX = this.player.x;
+                    hitBoxY = this.player.y - 48;
+                } else if (this.lastDirection === 'down') {
+                    // Hit down
+                    hitBoxX = this.player.x;
+                    hitBoxY = this.player.y + 38;
+                }
+
+                // Create the hitbox with dynamic size
                 hitBox = this.physics.add.sprite(hitBoxX, hitBoxY, null)
-                    // .setSize(65, 100)
-                    .setSize(this.lastDirection === 'up' || this.lastDirection === 'down' ? 100 : 65, this.lastDirection === 'up' || this.lastDirection === 'down' ? 65 : 100)
-                    .setVisible(false)
+                    .setSize(hitBoxWidth, hitBoxHeight)
+                    .setVisible(true)
                     .setImmovable(true);
             });
 
-            // Destruir la hitbox después de un segundo
-            this.time.delayedCall(300, () => {
+            // Destroy the hitbox after one second
+            this.time.delayedCall(500, () => {
                 hitBox.destroy();
             });
 
