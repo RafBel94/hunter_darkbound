@@ -17,11 +17,11 @@ class GameScene extends Phaser.Scene {
     preload() {
         this.load.image("bg", "/assets/bg.png")
         // Preload player animations
-        this.load.spritesheet('playerIdle', "/assets/knight/Idle2.png", { frameWidth: 55, frameHeight: 64 });
-        this.load.spritesheet('playerWalkLeft', "/assets/knight/WalkLeft2.png", { frameWidth: 57.75, frameHeight: 64 });
-        this.load.spritesheet('playerWalkRight', "/assets/knight/WalkRight2.png", { frameWidth: 57.75, frameHeight: 64 });
-        this.load.spritesheet('playerAttackRight', "/assets/knight/Attack 2 Right.png", { frameWidth: 65, frameHeight: 64 });
-        this.load.spritesheet('playerAttackLeft', "/assets/knight/Attack 2 Left.png", { frameWidth: 65, frameHeight: 64 });
+        this.load.spritesheet('playerIdle', "/assets/Soldier/Soldier/Soldier-Idle.png", { frameWidth: 100, frameHeight: 100 });
+        this.load.spritesheet('playerWalkLeft', "/assets/Soldier/Soldier/Soldier-Walk-Left.png", { frameWidth: 100, frameHeight: 100 });
+        this.load.spritesheet('playerWalkRight', "/assets/Soldier/Soldier/Soldier-Walk-Right.png", { frameWidth: 100, frameHeight: 100 });
+        this.load.spritesheet('playerAttackRight', "/assets/Soldier/Soldier/Soldier-Attack-Right.png", { frameWidth: 100, frameHeight: 100 });
+        this.load.spritesheet('playerAttackLeft', "/assets/Soldier/Soldier/Soldier-Attack-Left.png", { frameWidth: 100, frameHeight: 100 });
     }
 
     // This method creates the game objects
@@ -29,7 +29,9 @@ class GameScene extends Phaser.Scene {
         this.add.image(0, 0, "bg").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
         // Player creation (With physics)
         this.player = this.physics.add.sprite(sizes.width / 2, sizes.height / 2, 'playerIdle')
-        this.player.setScale(1.25)
+        this.player.setSize(25,25)
+        this.player.setScale(3)
+        this.player.body.setOffset((100 - 26) / 2, (100 - 30) / 2);
         this.player.setImmovable(true)
         this.player.body.allowGravity = false
         this.player.setCollideWorldBounds(true)
@@ -37,8 +39,8 @@ class GameScene extends Phaser.Scene {
         // Create player animations
         this.anims.create({
             key: 'idle',
-            frames: this.anims.generateFrameNumbers('playerIdle', { start: 0, end: 3 }),
-            frameRate: 4,
+            frames: this.anims.generateFrameNumbers('playerIdle', { start: 0, end: 5 }),
+            frameRate: 8,
             repeat: -1
         });
         this.anims.create({
@@ -55,13 +57,13 @@ class GameScene extends Phaser.Scene {
         });
         this.anims.create({
             key: 'attackRight',
-            frames: this.anims.generateFrameNumbers('playerAttackRight', { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers('playerAttackRight', { start: 0, end: 5 }),
             frameRate: 10,
             repeat: 0
         });
         this.anims.create({
             key: 'attackLeft',
-            frames: this.anims.generateFrameNumbers('playerAttackLeft', { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers('playerAttackLeft', { start: 0, end: 5 }),
             frameRate: 10,
             repeat: 0
         });
