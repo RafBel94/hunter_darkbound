@@ -41,8 +41,12 @@ class GameScene extends Phaser.Scene {
         // Player creation (With physics)
         this.player = new Player(this, sizes.width / 2, sizes.height / 2);
 
+        // Create a physics group for enemies
+        this.enemies = this.physics.add.group();
+
         // Enemy creation (With physics)
-        this.orc = new Orc(this, sizes.width * 0.8, sizes.height * 0.8, {velocity: 120, damage: 5});
+        this.createEnemies(5)
+
 
         // Create cursor keys for player movement
         this.cursor = this.input.keyboard.createCursorKeys();
@@ -55,41 +59,29 @@ class GameScene extends Phaser.Scene {
         });
     }
 
-    // This method is called every frame and updates the game logic and objects
-    update() {
-        // Make orc follow player
-        if(!this.orc.dead){
-            this.followPlayer(this.orc, this.player)
+    createEnemies(n) {
+        for (let i = 0; i < n; i++) {
+            const x = Phaser.Math.Between(0, sizes.width);
+            const y = Phaser.Math.Between(0, sizes.height);
+            const orc = new Orc(this, x, y);
+            this.enemies.add(orc);
         }
-
-        const { space } = this.cursor;
-
-        // Update player movement and attack
-        this.player.updateMovementAndAttack(this.wasd, space);
     }
 
-    followPlayer(enemy, player) {
-        // Get the difference between the player's position and the enemy's position
-        const diffX = player.x - enemy.x;
-        const diffY = player.y - enemy.y;
+    // This method is called every frame and updates the game logic and objects
+    update() {
+        this.enemies.children.iterate(orc => {
+            if (!orc.dead) {
+                orc.followPlayer(this.player, 'orcWalk');
+            }
+        });
 
-        // Calculate the distance between them
-        const distance = Math.sqrt(diffX * diffX + diffY * diffY);
-
-        // Set a movement speed for the enemy
-        const speed = enemy.velocity;
-
-        // Normalize the direction to keep the speed constant
-        const velocityX = (diffX / distance) * speed;
-        const velocityY = (diffY / distance) * speed;
-
-        // Apply the velocity to the enemy
-        enemy.setVelocity(velocityX, velocityY);
-
-        // Play the enemy's walking animation while moving
-        if (velocityX !== 0 || velocityY !== 0) {
-            enemy.anims.play('orcWalk', true);
+        if (this.enemies.length === 0) {
+            this.createEnemies(5)
         }
+
+        // Update player movement and attack
+        this.player.updateMovementAndAttack(this.wasd, this.cursor.space);
     }
 }
 

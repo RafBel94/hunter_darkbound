@@ -154,21 +154,27 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                     .setVisible(false)
                     .setImmovable(true);
 
-                // Check if the hitbox collides with the orc
-                this.scene.physics.world.overlap(hitBox, this.scene.orc, (hitBox, orc) => {
-                    orc.dead = true;
+                // Check if the hitbox collides with any enemy
+                this.scene.physics.add.overlap(hitBox, this.scene.enemies.getChildren(), (hitBox, orc) => {
+                    if (orc && !orc.dead) { // Verifica si el orc existe y no está muerto
+                        orc.dead = true; // Marca el orc como muerto
 
-                    orc.anims.stop();
-                    orc.setVelocity(0, 0);
+                        orc.setVelocity(0, 0); // Detiene el movimiento del orc
 
-                    orc.anims.play('orcDeath', true);
+                        orc.anims.play('orcDeath', true); // Reproduce la animación de muerte
 
-                    orc.once('animationcomplete', () => {
-                        this.scene.time.delayedCall(1000, () => {
-                            orc.setVisible(false);
-                            orc.disableBody(true, true);
+                        orc.once('animationcomplete', () => {
+                            this.scene.time.delayedCall(1000, () => {
+                                if (orc && orc.body) { // Verifica si el orc y su cuerpo físico aún existen
+                                    orc.setVisible(false); // Oculta el orc
+                                    orc.disableBody(true, true); // Desactiva el cuerpo físico del orc
+
+                                    // Elimina el orc del grupo de enemigos
+                                    this.scene.enemies.remove(orc, true, true);
+                                }
+                            });
                         });
-                    });
+                    }
                 });
             });
 

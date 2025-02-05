@@ -1,11 +1,8 @@
 import Enemy from './Enemy.js';
 
 class Orc extends Enemy{
-    constructor(scene, x, y, {texture = 'orcIdle', velocity, damage}) {
+    constructor(scene, x, y, {texture = 'orcIdle', velocity = 120, damage = 5} = {}) {
         super(scene, x, y, texture, velocity, damage);
-
-        scene.add.existing(this);
-        scene.physics.add.existing(this);
 
         this.setSize(16, 18)
         this.setScale(2.5)
