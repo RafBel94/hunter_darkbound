@@ -119,7 +119,7 @@ class GameScene extends Phaser.Scene {
                 this.player.setVelocityY(0);
                 if (this.player.body.velocity.x === 0 && this.lastDirection === 'right') {
                     this.player.anims.play('idleRight', true);
-                }else{
+                } else {
                     if (this.player.body.velocity.x === 0 && this.lastDirection === 'left') {
                         this.player.anims.play('idleLeft', true);
                     }
@@ -154,6 +154,25 @@ class GameScene extends Phaser.Scene {
             } else {
                 this.player.anims.play('attackRight', true);
             }
+
+            // Asegura que al completar el ataque vuelva a la animación correcta
+            this.player.once('animationcomplete', () => {
+                this.isAttacking = false;
+            });
+
+            // Crea una hitbox frente al jugador
+            const hitboxX = this.lastDirection === 'left' ? this.player.x - 55 : this.player.x + 55;
+            const hitboxY = this.player.y - 9;
+
+            const hitBox = this.physics.add.sprite(hitboxX, hitboxY, null)
+                .setSize(60, 100)
+                .setVisible(false)
+                .setImmovable(true);
+
+            // Destruir la hitbox después de un segundo
+            this.time.delayedCall(500, () => {
+                hitBox.destroy();
+            });
 
             // Asegura que al completar el ataque vuelva a la animación correcta
             this.player.once('animationcomplete', () => {
