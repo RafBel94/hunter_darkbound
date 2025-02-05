@@ -96,11 +96,11 @@ class GameScene extends Phaser.Scene {
             if (left.isDown || a.isDown) {
                 this.player.setVelocityX(-this.playerSpeed);
                 this.player.anims.play('walkLeft', true);
-                this.lastDirection = 'left';
+                this.lastDirection = 'left';  // Se actualiza la dirección cuando el jugador se mueve a la izquierda
             } else if (right.isDown || d.isDown) {
                 this.player.setVelocityX(this.playerSpeed);
                 this.player.anims.play('walkRight', true);
-                this.lastDirection = 'right';
+                this.lastDirection = 'right';  // Se actualiza la dirección cuando el jugador se mueve a la derecha
             } else {
                 this.player.setVelocityX(0);
             }
@@ -108,25 +108,41 @@ class GameScene extends Phaser.Scene {
             if (up.isDown || w.isDown) {
                 this.player.setVelocityY(-this.playerSpeed);
                 if (!left.isDown && !right.isDown && !a.isDown && !d.isDown) {
-                    this.player.anims.play(this.lastDirection === 'left' ? 'walkLeft' : 'walkRight', true);
+                    if (this.lastDirection === 'left') {
+                        this.player.anims.play('walkLeft', true);
+                    } else if (this.lastDirection === 'right') {
+                        this.player.anims.play('walkRight', true);
+                    } else {
+                        this.player.anims.play('walkRight', true);
+                    }
                 }
+                this.lastDirection = 'up';
             } else if (down.isDown || s.isDown) {
                 this.player.setVelocityY(this.playerSpeed);
                 if (!left.isDown && !right.isDown && !a.isDown && !d.isDown) {
-                    this.player.anims.play(this.lastDirection === 'left' ? 'walkLeft' : 'walkRight', true);
+                    if (this.lastDirection === 'left') {
+                        this.player.anims.play('walkLeft', true);
+                    } else if (this.lastDirection === 'right') {
+                        this.player.anims.play('walkRight', true);
+                    } else {
+                        this.player.anims.play('walkRight', true);
+                    }
                 }
+                this.lastDirection = 'down';
             } else {
                 this.player.setVelocityY(0);
                 if (this.player.body.velocity.x === 0 && this.lastDirection === 'right') {
                     this.player.anims.play('idleRight', true);
-                } else {
-                    if (this.player.body.velocity.x === 0 && this.lastDirection === 'left') {
-                        this.player.anims.play('idleLeft', true);
-                    }
+                } else if (this.player.body.velocity.x === 0 && this.lastDirection === 'left') {
+                    this.player.anims.play('idleLeft', true);
+                } else if (this.player.body.velocity.y === 0 && this.lastDirection === 'up') {
+                    this.player.anims.play('idleRight', true);
+                } else if (this.player.body.velocity.y === 0 && this.lastDirection === 'down') {
+                    this.player.anims.play('idleRight', true);
                 }
             }
+
         } else {
-            // Mantiene la velocidad pero no cambia la animación
             if (left.isDown || a.isDown) {
                 this.player.setVelocityX(-this.playerSpeed);
             } else if (right.isDown || d.isDown) {
@@ -148,8 +164,7 @@ class GameScene extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(space)) {
             this.isAttacking = true;
 
-            // Reproduce la animación de ataque según la última dirección
-            if (this.lastDirection === 'left') {
+            if (this.lastDirection === 'left' || this.lastDirection === 'top') {
                 this.player.anims.play('attackLeft', true);
             } else {
                 this.player.anims.play('attackRight', true);
@@ -160,24 +175,42 @@ class GameScene extends Phaser.Scene {
                 this.isAttacking = false;
             });
 
-            // Crea una hitbox frente al jugador
-            const hitboxX = this.lastDirection === 'left' ? this.player.x - 55 : this.player.x + 55;
-            const hitboxY = this.player.y - 9;
 
-            const hitBox = this.physics.add.sprite(hitboxX, hitboxY, null)
-                .setSize(60, 100)
-                .setVisible(false)
-                .setImmovable(true);
+
+            // Crea una hitbox frente al jugador
+            var hitBox = null;
+            var hitBoxX = null;
+            var hitBoxY = null;
+
+            this.time.delayedCall(240, () => {
+                if (this.lastDirection === 'left' || this.lastDirection === 'right') {
+                    hitBoxX = this.lastDirection === 'left' ? this.player.x - 70 : this.player.x + 70;
+                    hitBoxY = this.player.y - 9; // Para los ataques horizontales
+                } else if (this.lastDirection === 'top' || this.lastDirection === 'down') {
+                    hitBoxX = this.player.x - 5; // Desplazamiento horizontal
+
+                    // Ajuste de hitBoxY teniendo en cuenta el tamaño y posición del jugador
+                    if (this.lastDirection === 'top') {
+                        hitBoxY = this.player.y - 50; // Coloca la hitbox encima del jugador
+                    } else if (this.lastDirection === 'down') {
+                        hitBoxY = this.player.y + 50; // Coloca la hitbox debajo del jugador
+                    }
+                }
+
+                // Crear la hitbox
+                hitBox = this.physics.add.sprite(hitBoxX, hitBoxY, null)
+                    .setSize(65, 100)
+                    .setVisible(false)
+                    .setImmovable(true);
+                    console.log(hitBoxX, hitBoxY);
+            });
 
             // Destruir la hitbox después de un segundo
-            this.time.delayedCall(500, () => {
+            this.time.delayedCall(300, () => {
                 hitBox.destroy();
             });
 
-            // Asegura que al completar el ataque vuelva a la animación correcta
-            this.player.once('animationcomplete', () => {
-                this.isAttacking = false;
-            });
+
         }
     }
 }
