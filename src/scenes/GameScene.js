@@ -19,7 +19,7 @@ class GameScene extends Phaser.Scene {
     // This method preloads the assets
     preload() {
         // Preload background and misc assets
-        this.load.image("bg", "/assets/bg-testing.png")
+        this.load.image("bg", "/assets/bg.png")
 
         // Preload player animations
         PlayerFunctions.loadPlayerSpritesheets(this);
@@ -28,7 +28,8 @@ class GameScene extends Phaser.Scene {
         EnemyFunctions.loadEnemySpritesheets(this);
 
         // Sounds
-        this.load.audio('swordAttackSound1', ['assets/sword-swing-1.ogg']);
+        this.load.audio('swordAttackSound1', ['assets/sounds/sword-swing-1.ogg']);
+        this.load.audio('orcVillagerDeathSound', ['assets/sounds/orc_villager_death.mp3']);
     }
 
     create() {
@@ -45,7 +46,7 @@ class GameScene extends Phaser.Scene {
         this.enemies = this.physics.add.group();
 
         // Enemy creation (With physics)
-        this.createEnemies(5)
+        this.createEnemies(10)
 
 
         // Create cursor keys for player movement
@@ -125,7 +126,7 @@ class GameScene extends Phaser.Scene {
         if (this.enemies.children.size === 0) {
             this.roundcount++;
             this.roundText.setText(`Round: ${this.roundcount}`);
-            this.createEnemies(5)
+            this.createEnemies(10)
         }
 
         // Update player movement and attack

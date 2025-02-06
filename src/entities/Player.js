@@ -161,6 +161,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                         enemy.dead = true;
                         enemy.setVelocity(0, 0);
                         enemy.anims.play('orcVillagerDeath', true);
+                        this.scene.sound.play('orcVillagerDeathSound', false);
                         this.scene.physics.world.disable(enemy);
                         this.exp += enemy.exp;
                         this.scene.expText.setText(`Exp: ${this.exp}`);
