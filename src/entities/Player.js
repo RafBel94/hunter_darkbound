@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import Phaser from 'phaser'
 
 class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture) {
@@ -22,6 +22,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.velocity = 220;
         this.isAttacking = false;
         this.lastDirection = 'right';
+        this.exp = 0
     }
 
     updateMovementAndAttack(wasd, space) {
@@ -155,25 +156,23 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                     .setImmovable(true);
 
                 // Check if the hitbox collides with any enemy
-                this.scene.physics.add.overlap(hitBox, this.scene.enemies.getChildren(), (hitBox, orc) => {
-                    if (orc && !orc.dead) { // Verifica si el orc existe y no está muerto
-                        orc.dead = true; // Marca el orc como muerto
-
-                        orc.setVelocity(0, 0); // Detiene el movimiento del orc
-
-                        orc.anims.play('orcDeath', true); // Reproduce la animación de muerte
-
-                        orc.once('animationcomplete', () => {
-                            this.scene.time.delayedCall(1000, () => {
-                                if (orc && orc.body) { // Verifica si el orc y su cuerpo físico aún existen
-                                    orc.setVisible(false); // Oculta el orc
-                                    orc.disableBody(true, true); // Desactiva el cuerpo físico del orc
-
-                                    // Elimina el orc del grupo de enemigos
-                                    this.scene.enemies.remove(orc, true, true);
+                this.scene.physics.add.overlap(hitBox, this.scene.enemies.getChildren(), (hitBox, enemy) => {
+                    if (enemy && !enemy.dead) {
+                        enemy.dead = true;
+                        enemy.setVelocity(0, 0);
+                        enemy.anims.play('orcVillagerDeath', true);
+                        this.scene.physics.world.disable(enemy);
+                        this.exp += enemy.exp;
+                        this.scene.expText.setText(`Exp: ${this.exp}`);
+                        enemy.once('animationcomplete', () => {
+                            this.scene.time.delayedCall(400, () => {
+                                if (enemy) {
+                                    enemy.setVisible(false);
+                                    this.scene.enemies.remove(enemy, true, true);
                                 }
                             });
                         });
+                        console.log('Player exp:', this.exp);
                     }
                 });
             });
