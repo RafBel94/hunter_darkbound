@@ -22,7 +22,8 @@ class GameScene extends Phaser.Scene {
         this.load.bitmapFont('pixelfont', 'assets/fonts/minogram_6x10.png', 'assets/fonts/minogram_6x10.xml');
 
         // Preload background and misc assets
-        this.load.image("bg", "assets/bg.png")
+        this.load.image("bg", "assets/OrcVillageMap.png")
+        // this.load.image("bg", "assets/bg-testing.png")
 
         // Preload player animations
         PlayerFunctions.loadPlayerSpritesheets(this);
@@ -31,6 +32,7 @@ class GameScene extends Phaser.Scene {
         EnemyFunctions.loadEnemySpritesheets(this);
 
         // Sounds
+        this.load.audio('music01', ['assets/sounds/music01.mp3']);
         this.load.audio('swordAttackSound1', ['assets/sounds/sword-swing-1.ogg']);
         this.load.audio('hitSound1', ['assets/sounds/hit-flesh-01.mp3']);
         this.load.audio('hitSound2', ['assets/sounds/hit-flesh-02.mp3']);
@@ -38,6 +40,7 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
+        this.sound.play('music01', { loop: true, volume: 0.3 });
         this.add.image(0, 0, "bg").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
 
         // Enemy functions

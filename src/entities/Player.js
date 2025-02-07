@@ -9,7 +9,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         // Custom properties
         this.scene = scene;
         this.damage = 10;
-        this.velocity = 220;
+        this.velocity = 150;
         this.isAttacking = false;
         this.lastDirection = 'right';
         this.exp = 0
@@ -19,9 +19,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this);
 
         // Set player properties
-        this.setSize(12, 18);
-        this.setScale(2.3);
-        this.body.setOffset(44, 39);
+        this.setSize(10, 15);
+        this.setScale(2);
+        this.body.setOffset(46, 42);
         this.setImmovable(true);
         this.setCollideWorldBounds(true);
     }
@@ -98,16 +98,16 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.scene.time.delayedCall(50, () => {
                 // Diagonal movement (square hitbox)
                 if ((a.isDown && s.isDown) || (a.isDown && w.isDown) || (d.isDown && s.isDown) || (d.isDown && w.isDown)) {
-                    hitBoxWidth = 50;
-                    hitBoxHeight = 50;
+                    hitBoxWidth = 45;
+                    hitBoxHeight = 45;
                 } else {
                     // Normal movement (rectangular)
                     if (this.lastDirection === 'up' || this.lastDirection === 'down') {
                         hitBoxWidth = 65;
-                        hitBoxHeight = 30;
+                        hitBoxHeight = 26;
                     } else {
-                        hitBoxWidth = 40;
-                        hitBoxHeight = 65;
+                        hitBoxWidth = 32;
+                        hitBoxHeight = 55;
                     }
                 }
 
@@ -125,28 +125,28 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                     hitBoxX = this.x + 30;
                     hitBoxY = this.y - 30;
                 } else if (a.isDown) {
-                    hitBoxX = this.x - 50;
-                    hitBoxY = this.y - 9;
+                    hitBoxX = this.x - 40;
+                    hitBoxY = this.y - 2;
                 } else if (d.isDown) {
-                    hitBoxX = this.x + 50;
-                    hitBoxY = this.y - 9;
+                    hitBoxX = this.x + 40;
+                    hitBoxY = this.y - 2;
                 } else if (w.isDown) {
-                    hitBoxX = this.x;
-                    hitBoxY = this.y - 50;
+                    hitBoxX = this.x + 2;
+                    hitBoxY = this.y - 40;
                 } else if (s.isDown) {
                     hitBoxX = this.x;
-                    hitBoxY = this.y + 50;
+                    hitBoxY = this.y + 40;
                 } else if (this.lastDirection === 'left') {
-                    hitBoxX = this.x - 30;
-                    hitBoxY = this.y - 5;
+                    hitBoxX = this.x - 26;
+                    hitBoxY = this.y - 2;
                 } else if (this.lastDirection === 'right') {
-                    hitBoxX = this.x + 30;
-                    hitBoxY = this.y - 5;
+                    hitBoxX = this.x + 27;
+                    hitBoxY = this.y - 2;
                 } else if (this.lastDirection === 'up') {
-                    hitBoxX = this.x;
+                    hitBoxX = this.x + 2;
                     hitBoxY = this.y - 32;
                 } else if (this.lastDirection === 'down') {
-                    hitBoxX = this.x;
+                    hitBoxX = this.x + 2;
                     hitBoxY = this.y + 28;
                 }
 

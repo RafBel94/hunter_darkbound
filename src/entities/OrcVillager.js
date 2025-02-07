@@ -4,9 +4,9 @@ class Orc extends Enemy{
     constructor(scene, x, y, {texture = 'orcIdle', velocity = 100, damage = 2, hp = 10, exp = 5} = {}) {
         super(scene, x, y, texture, velocity, damage, hp, exp);
 
-        this.setSize(20, 30)
-        this.setScale(1.5)
-        this.body.setOffset(22, 13);
+        this.setSize(16, 25)
+        this.setScale(1.3)
+        this.body.setOffset(23, 16);
         this.setImmovable(true)
         this.setPushable(false)
     }
