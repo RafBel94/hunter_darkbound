@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 import Player from '../entities/Player.js'
-import Orc from '../entities/Orc.js'
+import Orc from '../entities/OrcVillager.js'
+import OrcWarrior from '../entities/OrcWarrior.js'
 import { sizes } from '../config/config.js'
 import * as EnemyFunctions from '../functions/EnemyFunctions.js'
 import * as PlayerFunctions from '../functions/PlayerFunctions.js'
@@ -19,7 +20,7 @@ class GameScene extends Phaser.Scene {
     // This method preloads the assets
     preload() {
         // Preload background and misc assets
-        this.load.image("bg", "/assets/bg.png")
+        this.load.image("bg", "/assets/bg-testing.png")
 
         // Preload player animations
         PlayerFunctions.loadPlayerSpritesheets(this);
@@ -29,7 +30,7 @@ class GameScene extends Phaser.Scene {
 
         // Sounds
         this.load.audio('swordAttackSound1', ['assets/sounds/sword-swing-1.ogg']);
-        this.load.audio('orcVillagerDeathSound', ['assets/sounds/orc_villager_death.mp3']);
+        this.load.audio('hitSound1', ['assets/sounds/hit-flesh-01.mp3']);
     }
 
     create() {
@@ -39,14 +40,14 @@ class GameScene extends Phaser.Scene {
         // Create player animations
         PlayerFunctions.loadPlayerAnimations(this);
 
-        // Player creation (With physics)
+        // Player creation
         this.player = new Player(this, sizes.width / 2, sizes.height / 2);
 
         // Create a physics group for enemies
         this.enemies = this.physics.add.group();
 
-        // Enemy creation (With physics)
-        this.createEnemies(10)
+        // Enemy creation
+        this.createEnemies(10, 'orcVillager')
 
 
         // Create cursor keys for player movement
@@ -78,60 +79,81 @@ class GameScene extends Phaser.Scene {
         }).setOrigin(12, 0);
     }
 
-    createEnemies(n) {
-        const margin = 100;
-        const screenWidth = sizes.width;
-        const screenHeight = sizes.height;
-
+    createEnemies(n, type) {
         for (let i = 0; i < n; i++) {
-            let x, y;
+            let { x, y } = this.calculateSpawnZone();
 
-            const zone = Phaser.Math.Between(1, 4);
-
-            switch (zone) {
-                case 1: // Top zone
-                    x = Phaser.Math.Between(-margin, screenWidth + margin);
-                    y = Phaser.Math.Between(-margin, -margin);
+            let enemy;
+            switch (type) {
+                case 'orcVillager':
+                    enemy = new Orc(this, x, y);
                     break;
-                case 2: // Bottom zone
-                    x = Phaser.Math.Between(-margin, screenWidth + margin);
-                    y = Phaser.Math.Between(screenHeight + margin, screenHeight + margin);
-                    break;
-                case 3: // Left zone
-                    x = Phaser.Math.Between(-margin, -margin);
-                    y = Phaser.Math.Between(-margin, screenHeight + margin);
-                    break;
-                case 4: // Right zone
-                    x = Phaser.Math.Between(screenWidth + margin, screenWidth + margin);
-                    y = Phaser.Math.Between(-margin, screenHeight + margin);
+                case 'orcWarrior':
+                    enemy = new OrcWarrior(this, x, y);
                     break;
             }
-
-            const enemy = new Orc(this, x, y);
             this.enemies.add(enemy);
 
             this.physics.add.collider(this.enemies, this.enemies);
         }
     }
 
+    calculateSpawnZone() {
+        let x, y;
+        const margin = 100;
+        const screenWidth = sizes.width;
+        const screenHeight = sizes.height;
+        const zone = Phaser.Math.Between(1, 4);
+
+        switch (zone) {
+            case 1: // Top zone
+                x = Phaser.Math.Between(-margin, screenWidth + margin);
+                y = Phaser.Math.Between(-margin, -margin);
+                return {x,y};
+            case 2: // Bottom zone
+                x = Phaser.Math.Between(-margin, screenWidth + margin);
+                y = Phaser.Math.Between(screenHeight + margin, screenHeight + margin);
+                return {x,y};
+            case 3: // Left zone
+                x = Phaser.Math.Between(-margin, -margin);
+                y = Phaser.Math.Between(-margin, screenHeight + margin);
+                return {x,y};
+            case 4: // Right zone
+                x = Phaser.Math.Between(screenWidth + margin, screenWidth + margin);
+                y = Phaser.Math.Between(-margin, screenHeight + margin);
+                return {x,y};
+        }
+    }
+
     // This method is called every frame and updates the game logic and objects
     update() {
 
+        // Make every enemy follow the player
         this.enemies.children.iterate(enemy => {
             if (!enemy.dead) {
-                enemy.followPlayer(this.player, 'orcVillagerWalk');
+                if (enemy instanceof Orc){
+                    enemy.followPlayer(this.player, 'orcVillagerWalk');
+                } else if (enemy instanceof OrcWarrior){
+                    enemy.followPlayer(this.player, 'orcWarriorWalk');
+                }
             }
         });
 
+        // Check if there's no enemies left
         if (this.enemies.children.size === 0) {
             this.roundcount++;
             this.roundText.setText(`Round: ${this.roundcount}`);
-            this.createEnemies(10)
+
+            if (this.player.exp >= 50) {
+                this.createEnemies(5, 'orcVillager');
+                this.createEnemies(5, 'orcWarrior');
+            }
         }
 
         // Update player movement and attack
         this.player.updateMovementAndAttack(this.wasd, this.cursor.space);
     }
 }
+
 
 export default GameScene;

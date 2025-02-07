@@ -1,4 +1,6 @@
 import Phaser from 'phaser'
+import Orc from '../entities/OrcVillager.js'
+import OrcWarrior from '../entities/OrcWarrior.js'
 
 class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture) {
@@ -97,56 +99,56 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.scene.time.delayedCall(200, () => {
                 // Diagonal movement (square hitbox)
                 if ((a.isDown && s.isDown) || (a.isDown && w.isDown) || (d.isDown && s.isDown) || (d.isDown && w.isDown)) {
-                    hitBoxWidth = 70;
-                    hitBoxHeight = 70;
+                    hitBoxWidth = 50;
+                    hitBoxHeight = 50;
                 } else {
                     // Normal movement (rectangular)
                     if (this.lastDirection === 'up' || this.lastDirection === 'down') {
-                        hitBoxWidth = 90;
-                        hitBoxHeight = 50;
+                        hitBoxWidth = 65;
+                        hitBoxHeight = 30;
                     } else {
-                        hitBoxWidth = 50;
-                        hitBoxHeight = 90;
+                        hitBoxWidth = 40;
+                        hitBoxHeight = 65;
                     }
                 }
 
                 // Position of the hitbox
                 if (s.isDown && a.isDown) {
-                    hitBoxX = this.x - 50;
-                    hitBoxY = this.y + 50;
+                    hitBoxX = this.x - 40;
+                    hitBoxY = this.y + 40;
                 } else if (s.isDown && d.isDown) {
-                    hitBoxX = this.x + 50;
-                    hitBoxY = this.y + 50;
+                    hitBoxX = this.x + 40;
+                    hitBoxY = this.y + 40;
                 } else if (w.isDown && a.isDown) {
-                    hitBoxX = this.x - 50;
-                    hitBoxY = this.y - 50;
+                    hitBoxX = this.x - 40;
+                    hitBoxY = this.y - 40;
                 } else if (w.isDown && d.isDown) {
-                    hitBoxX = this.x + 50;
-                    hitBoxY = this.y - 50;
+                    hitBoxX = this.x + 40;
+                    hitBoxY = this.y - 40;
                 } else if (a.isDown) {
-                    hitBoxX = this.x - 70;
+                    hitBoxX = this.x - 60;
                     hitBoxY = this.y - 9;
                 } else if (d.isDown) {
-                    hitBoxX = this.x + 70;
+                    hitBoxX = this.x + 60;
                     hitBoxY = this.y - 9;
                 } else if (w.isDown) {
                     hitBoxX = this.x;
-                    hitBoxY = this.y - 70;
+                    hitBoxY = this.y - 60;
                 } else if (s.isDown) {
                     hitBoxX = this.x;
-                    hitBoxY = this.y + 70;
+                    hitBoxY = this.y + 60;
                 } else if (this.lastDirection === 'left') {
-                    hitBoxX = this.x - 45;
-                    hitBoxY = this.y - 9;
+                    hitBoxX = this.x - 30;
+                    hitBoxY = this.y - 5;
                 } else if (this.lastDirection === 'right') {
-                    hitBoxX = this.x + 45;
-                    hitBoxY = this.y - 9;
+                    hitBoxX = this.x + 30;
+                    hitBoxY = this.y - 5;
                 } else if (this.lastDirection === 'up') {
                     hitBoxX = this.x;
-                    hitBoxY = this.y - 48;
+                    hitBoxY = this.y - 32;
                 } else if (this.lastDirection === 'down') {
                     hitBoxX = this.x;
-                    hitBoxY = this.y + 38;
+                    hitBoxY = this.y + 28;
                 }
 
                 // Create the hitbox with dynamic size
@@ -160,9 +162,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                     if (enemy && !enemy.dead) {
                         enemy.dead = true;
                         enemy.setVelocity(0, 0);
-                        enemy.anims.play('orcVillagerDeath', true);
-                        this.scene.sound.play('orcVillagerDeathSound', false);
+
+                        if (enemy instanceof Orc) {
+                            enemy.anims.play('orcVillagerDeath', true);
+                        } else if (enemy instanceof OrcWarrior) {
+                            enemy.anims.play('orcWarriorDeath', true);
+                        }
+
+                        this.scene.sound.play('hitSound1', false);
+
                         this.scene.physics.world.disable(enemy);
+
                         this.exp += enemy.exp;
                         this.scene.expText.setText(`Exp: ${this.exp}`);
                         enemy.once('animationcomplete', () => {
