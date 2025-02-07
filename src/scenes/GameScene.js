@@ -18,8 +18,11 @@ class GameScene extends Phaser.Scene {
 
     // This method preloads the assets
     preload() {
+        // Preload fonts
+        this.load.bitmapFont('pixelfont', 'assets/fonts/minogram_6x10.png', 'assets/fonts/minogram_6x10.xml');
+
         // Preload background and misc assets
-        this.load.image("bg", "/assets/bg-testing.png")
+        this.load.image("bg", "assets/bg.png")
 
         // Preload player animations
         PlayerFunctions.loadPlayerSpritesheets(this);
@@ -64,22 +67,11 @@ class GameScene extends Phaser.Scene {
         });
 
         // Create the text to display the player's experience
-        this.expText = this.add.text(sizes.width - 20, 20, 'Exp: 0', {
-            fontSize: '24px',
-            fill: '#ffffff',
-            fontFamily: 'Arial',
-            stroke: '#000000',
-            strokeThickness: 4
-        }).setOrigin(1, 0);
-
+        this.expText = this.add.bitmapText(20, 20, 'pixelfont', "Exp: 0", 30).setOrigin(0, 0);
+        
         // Clock Text
-        this.clockText = this.add.text(sizes.width, 20, '00:00', {
-            fontSize: '38px',
-            fill: '#ffffff',
-            fontFamily: 'Arial',
-            stroke: '#000000',
-            strokeThickness: 4
-        }).setOrigin(8.5, 0);
+        this.clockText = this.add.bitmapText(sizes.width / 2, 20, 'pixelfont', "00:00", 40);
+        
     }
 
     createEnemies(n, type) {
@@ -130,7 +122,6 @@ class GameScene extends Phaser.Scene {
 
     // This method is called every frame and updates the game logic and objects
     update() {
-
         // Make every enemy follow the player
         this.enemies.children.iterate(enemy => {
             if (enemy.hp > 0 && enemy.hasBeenHit === false) {

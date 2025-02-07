@@ -11,6 +11,7 @@ const config = {
     width: sizes.width,
     height: sizes.height,
     canvas: gameCanvas,
+    pixelArt: true,
     physics: {
         default: "arcade",
         arcade: {
