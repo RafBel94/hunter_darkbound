@@ -7,6 +7,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.velocity = velocity
         this.hp = hp
         this.exp = exp
+        this.hasBeenHit = false
 
         scene.add.existing(this);
         scene.physics.add.existing(this);

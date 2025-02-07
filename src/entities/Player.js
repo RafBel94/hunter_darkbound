@@ -95,7 +95,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             let hitBoxWidth = 50;
             let hitBoxHeight = 90;
 
-            this.scene.time.delayedCall(200, () => {
+            this.scene.time.delayedCall(50, () => {
                 // Diagonal movement (square hitbox)
                 if ((a.isDown && s.isDown) || (a.isDown && w.isDown) || (d.isDown && s.isDown) || (d.isDown && w.isDown)) {
                     hitBoxWidth = 50;
@@ -113,29 +113,29 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
                 // Position of the hitbox
                 if (s.isDown && a.isDown) {
-                    hitBoxX = this.x - 40;
-                    hitBoxY = this.y + 40;
+                    hitBoxX = this.x - 30;
+                    hitBoxY = this.y + 30;
                 } else if (s.isDown && d.isDown) {
-                    hitBoxX = this.x + 40;
-                    hitBoxY = this.y + 40;
+                    hitBoxX = this.x + 30;
+                    hitBoxY = this.y + 30;
                 } else if (w.isDown && a.isDown) {
-                    hitBoxX = this.x - 40;
-                    hitBoxY = this.y - 40;
+                    hitBoxX = this.x - 30;
+                    hitBoxY = this.y - 30;
                 } else if (w.isDown && d.isDown) {
-                    hitBoxX = this.x + 40;
-                    hitBoxY = this.y - 40;
+                    hitBoxX = this.x + 30;
+                    hitBoxY = this.y - 30;
                 } else if (a.isDown) {
-                    hitBoxX = this.x - 60;
+                    hitBoxX = this.x - 50;
                     hitBoxY = this.y - 9;
                 } else if (d.isDown) {
-                    hitBoxX = this.x + 60;
+                    hitBoxX = this.x + 50;
                     hitBoxY = this.y - 9;
                 } else if (w.isDown) {
                     hitBoxX = this.x;
-                    hitBoxY = this.y - 60;
+                    hitBoxY = this.y - 50;
                 } else if (s.isDown) {
                     hitBoxX = this.x;
-                    hitBoxY = this.y + 60;
+                    hitBoxY = this.y + 50;
                 } else if (this.lastDirection === 'left') {
                     hitBoxX = this.x - 30;
                     hitBoxY = this.y - 5;
@@ -159,15 +159,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                 // Check if the hitbox collides with any enemy
                 this.scene.physics.add.overlap(hitBox, this.scene.enemies.getChildren(), (hitBox, enemy) => {
                     if (!enemy.hasBeenHit) {
-                        this.scene.sound.play('hitSound1', false);
                         enemy.hp -= this.damage;
                         enemy.hasBeenHit = true;
-                
+                        
                         this.scene.time.delayedCall(500, () => {
                             enemy.hasBeenHit = false;
                         });
-                
+                        
                         if (enemy && enemy.hp <= 0) {
+                            this.scene.sound.play('hitSound1', false);
                             enemy.setVelocity(0, 0);
                 
                             if (enemy instanceof Orc) {
@@ -189,13 +189,18 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                                     }
                                 });
                             });
+                        } else if (enemy) {
+                            this.scene.sound.play('hitSound2', false);
+                            if (enemy instanceof OrcWarrior) {
+                                enemy.anims.play('orcWarriorHurt', true);
+                            }
                         }
                     }
                 });
             });
 
             // Destroy the hitbox
-            this.scene.time.delayedCall(300, () => {
+            this.scene.time.delayedCall(100, () => {
                 hitBox.destroy();
             });
         }

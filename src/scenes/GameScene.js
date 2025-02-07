@@ -14,13 +14,12 @@ class GameScene extends Phaser.Scene {
         super("scene-game")
         this.player
         this.enemies = []
-        this.roundcount = 1
     }
 
     // This method preloads the assets
     preload() {
         // Preload background and misc assets
-        this.load.image("bg", "/assets/bg.png")
+        this.load.image("bg", "/assets/bg-testing.png")
 
         // Preload player animations
         PlayerFunctions.loadPlayerSpritesheets(this);
@@ -31,6 +30,8 @@ class GameScene extends Phaser.Scene {
         // Sounds
         this.load.audio('swordAttackSound1', ['assets/sounds/sword-swing-1.ogg']);
         this.load.audio('hitSound1', ['assets/sounds/hit-flesh-01.mp3']);
+        this.load.audio('hitSound2', ['assets/sounds/hit-flesh-02.mp3']);
+        this.sound.volume = 0.5;
     }
 
     create() {
@@ -71,14 +72,14 @@ class GameScene extends Phaser.Scene {
             strokeThickness: 4
         }).setOrigin(1, 0);
 
-        // Create the text to display the round number
-        this.roundText = this.add.text(sizes.width - 20, 20, 'Round: 1', {
-            fontSize: '24px',
+        // Clock Text
+        this.clockText = this.add.text(sizes.width, 20, '00:00', {
+            fontSize: '38px',
             fill: '#ffffff',
             fontFamily: 'Arial',
             stroke: '#000000',
             strokeThickness: 4
-        }).setOrigin(12, 0);
+        }).setOrigin(8.5, 0);
     }
 
     createEnemies(n, type) {
@@ -132,7 +133,7 @@ class GameScene extends Phaser.Scene {
 
         // Make every enemy follow the player
         this.enemies.children.iterate(enemy => {
-            if (enemy.hp > 0) {
+            if (enemy.hp > 0 && enemy.hasBeenHit === false) {
                 if (enemy instanceof Orc) {
                     enemy.followPlayer(this.player, 'orcVillagerWalk');
                 } else if (enemy instanceof OrcWarrior) {
@@ -143,8 +144,6 @@ class GameScene extends Phaser.Scene {
 
         // Check if there's no enemies left
         if (this.enemies.children.size === 0) {
-            this.roundcount++;
-            this.roundText.setText(`Round: ${this.roundcount}`);
 
             if (this.player.exp >= 50) {
                 this.createEnemies(5, 'orcVillager');
@@ -154,6 +153,21 @@ class GameScene extends Phaser.Scene {
 
         // Update player movement and attack
         this.player.updateMovementAndAttack(this.wasd, this.cursor.space);
+
+        // Update the clock
+        this.updateClock();
+    }
+
+    updateClock() {
+        let time = this.time.now;
+        let minutes = Math.floor(time / 60000);
+        let seconds = Math.floor((time % 60000) / 1000);
+
+        if (seconds < 10) {
+            seconds = `0${seconds}`;
+        }
+
+        this.clockText.setText(`${minutes}:${seconds}`);
     }
 }
 
