@@ -6,6 +6,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture) {
         super(scene, x, y, texture);
 
+        // Custom properties
+        this.scene = scene;
+        this.damage = 10;
+        this.velocity = 220;
+        this.isAttacking = false;
+        this.lastDirection = 'right';
+        this.exp = 0
+
         // Add the player to the scene
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -16,15 +24,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.body.setOffset(44, 39);
         this.setImmovable(true);
         this.setCollideWorldBounds(true);
-
-        // Custom properties
-        this.scene = scene;
-        this.dead = false;
-        this.damage = 10;
-        this.velocity = 220;
-        this.isAttacking = false;
-        this.lastDirection = 'right';
-        this.exp = 0
     }
 
     updateMovementAndAttack(wasd, space) {
@@ -159,31 +158,38 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
                 // Check if the hitbox collides with any enemy
                 this.scene.physics.add.overlap(hitBox, this.scene.enemies.getChildren(), (hitBox, enemy) => {
-                    if (enemy && !enemy.dead) {
-                        enemy.dead = true;
-                        enemy.setVelocity(0, 0);
-
-                        if (enemy instanceof Orc) {
-                            enemy.anims.play('orcVillagerDeath', true);
-                        } else if (enemy instanceof OrcWarrior) {
-                            enemy.anims.play('orcWarriorDeath', true);
-                        }
-
+                    if (!enemy.hasBeenHit) {
                         this.scene.sound.play('hitSound1', false);
-
-                        this.scene.physics.world.disable(enemy);
-
-                        this.exp += enemy.exp;
-                        this.scene.expText.setText(`Exp: ${this.exp}`);
-                        enemy.once('animationcomplete', () => {
-                            this.scene.time.delayedCall(400, () => {
-                                if (enemy) {
-                                    enemy.setVisible(false);
-                                    this.scene.enemies.remove(enemy, true, true);
-                                }
-                            });
+                        enemy.hp -= this.damage;
+                        enemy.hasBeenHit = true;
+                
+                        this.scene.time.delayedCall(500, () => {
+                            enemy.hasBeenHit = false;
                         });
-                        console.log('Player exp:', this.exp);
+                
+                        if (enemy && enemy.hp <= 0) {
+                            enemy.setVelocity(0, 0);
+                
+                            if (enemy instanceof Orc) {
+                                enemy.anims.play('orcVillagerDeath', true);
+                            } else if (enemy instanceof OrcWarrior) {
+                                enemy.anims.play('orcWarriorDeath', true);
+                            }
+                
+                
+                            this.scene.physics.world.disable(enemy);
+                
+                            this.exp += enemy.exp;
+                            this.scene.expText.setText(`Exp: ${this.exp}`);
+                            enemy.once('animationcomplete', () => {
+                                this.scene.time.delayedCall(400, () => {
+                                    if (enemy) {
+                                        enemy.setVisible(false);
+                                        this.scene.enemies.remove(enemy, true, true);
+                                    }
+                                });
+                            });
+                        }
                     }
                 });
             });

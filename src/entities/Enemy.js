@@ -1,11 +1,11 @@
 import Phaser from "phaser"
 
 class Enemy extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, texture, velocity, damage, exp) {
+    constructor(scene, x, y, texture, velocity, damage, hp, exp) {
         super(scene, x, y, texture)
-        this.dead = false
         this.damage = damage
         this.velocity = velocity
+        this.hp = hp
         this.exp = exp
 
         scene.add.existing(this);

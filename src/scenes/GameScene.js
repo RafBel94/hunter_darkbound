@@ -20,7 +20,7 @@ class GameScene extends Phaser.Scene {
     // This method preloads the assets
     preload() {
         // Preload background and misc assets
-        this.load.image("bg", "/assets/bg-testing.png")
+        this.load.image("bg", "/assets/bg.png")
 
         // Preload player animations
         PlayerFunctions.loadPlayerSpritesheets(this);
@@ -35,6 +35,8 @@ class GameScene extends Phaser.Scene {
 
     create() {
         this.add.image(0, 0, "bg").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
+
+        // Enemy functions
         EnemyFunctions.loadEnemyAnimations(this);
 
         // Create player animations
@@ -109,19 +111,19 @@ class GameScene extends Phaser.Scene {
             case 1: // Top zone
                 x = Phaser.Math.Between(-margin, screenWidth + margin);
                 y = Phaser.Math.Between(-margin, -margin);
-                return {x,y};
+                return { x, y };
             case 2: // Bottom zone
                 x = Phaser.Math.Between(-margin, screenWidth + margin);
                 y = Phaser.Math.Between(screenHeight + margin, screenHeight + margin);
-                return {x,y};
+                return { x, y };
             case 3: // Left zone
                 x = Phaser.Math.Between(-margin, -margin);
                 y = Phaser.Math.Between(-margin, screenHeight + margin);
-                return {x,y};
+                return { x, y };
             case 4: // Right zone
                 x = Phaser.Math.Between(screenWidth + margin, screenWidth + margin);
                 y = Phaser.Math.Between(-margin, screenHeight + margin);
-                return {x,y};
+                return { x, y };
         }
     }
 
@@ -130,10 +132,10 @@ class GameScene extends Phaser.Scene {
 
         // Make every enemy follow the player
         this.enemies.children.iterate(enemy => {
-            if (!enemy.dead) {
-                if (enemy instanceof Orc){
+            if (enemy.hp > 0) {
+                if (enemy instanceof Orc) {
                     enemy.followPlayer(this.player, 'orcVillagerWalk');
-                } else if (enemy instanceof OrcWarrior){
+                } else if (enemy instanceof OrcWarrior) {
                     enemy.followPlayer(this.player, 'orcWarriorWalk');
                 }
             }
