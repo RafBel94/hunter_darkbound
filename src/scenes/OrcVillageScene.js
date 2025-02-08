@@ -9,11 +9,12 @@ import * as PlayerFunctions from '../functions/PlayerFunctions.js'
 // GameScene class
 // It contains the game logic such as player movement, collision detection, etc.
 // It also contains assets loading and creation of game objects
-class GameScene extends Phaser.Scene {
+class OrcVillageScene extends Phaser.Scene {
     constructor() {
-        super("scene-game")
+        super("OrcVillageScene")
         this.player
         this.enemies = []
+        this.startTime = 0
     }
 
     // This method preloads the assets
@@ -22,8 +23,8 @@ class GameScene extends Phaser.Scene {
         this.load.bitmapFont('pixelfont', 'assets/fonts/minogram_6x10.png', 'assets/fonts/minogram_6x10.xml');
 
         // Preload background and misc assets
-        this.load.image("bg", "assets/OrcVillageMap.png")
-        // this.load.image("bg", "assets/bg-testing.png")
+        this.load.image("orcVillageBackground", "assets/images/backgrounds/OrcVillageMap.png")
+        // this.load.image("bg", "assets/images/backgrounds/testing.png")
 
         // Preload player animations
         PlayerFunctions.loadPlayerSpritesheets(this);
@@ -41,7 +42,7 @@ class GameScene extends Phaser.Scene {
 
     create() {
         this.sound.play('music01', { loop: true, volume: 0.3 });
-        this.add.image(0, 0, "bg").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
+        this.add.image(0, 0, "orcVillageBackground").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
 
         // Enemy functions
         EnemyFunctions.loadEnemyAnimations(this);
@@ -61,6 +62,7 @@ class GameScene extends Phaser.Scene {
 
         // Create cursor keys for player movement
         this.cursor = this.input.keyboard.createCursorKeys();
+
         // Create WASD keys for player movement
         this.wasd = this.input.keyboard.addKeys({
             up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -69,12 +71,16 @@ class GameScene extends Phaser.Scene {
             right: Phaser.Input.Keyboard.KeyCodes.D
         });
 
+        // Create Escape key to pause the game
+        this.escape = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+
         // Create the text to display the player's experience
         this.expText = this.add.bitmapText(20, 20, 'pixelfont', "Exp: 0", 30).setOrigin(0, 0);
-        
+
         // Clock Text
         this.clockText = this.add.bitmapText(sizes.width / 2, 20, 'pixelfont', "00:00", 40);
-        
+        this.startTime = this.time.now;
+
     }
 
     createEnemies(n, type) {
@@ -125,6 +131,11 @@ class GameScene extends Phaser.Scene {
 
     // This method is called every frame and updates the game logic and objects
     update() {
+        // Pause the game
+        if (Phaser.Input.Keyboard.JustDown(this.escape)) {
+            this.scene.pause();
+        }
+
         // Make every enemy follow the player
         this.enemies.children.iterate(enemy => {
             if (enemy.hp > 0 && enemy.hasBeenHit === false) {
@@ -153,7 +164,7 @@ class GameScene extends Phaser.Scene {
     }
 
     updateClock() {
-        let time = this.time.now;
+        let time = this.time.now - this.startTime;
         let minutes = Math.floor(time / 60000);
         let seconds = Math.floor((time % 60000) / 1000);
 
@@ -166,4 +177,4 @@ class GameScene extends Phaser.Scene {
 }
 
 
-export default GameScene;
+export default OrcVillageScene;

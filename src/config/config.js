@@ -1,4 +1,5 @@
-import GameScene from '../scenes/GameScene'
+import OrcVillageScene from '../scenes/OrcVillageScene'
+import MenuScene from '../scenes/MenuScene';
 
 export const sizes = {
     width: 1280,
@@ -18,7 +19,7 @@ const config = {
             debug: false
         }
     },
-    scene: [GameScene],
+    scene: [MenuScene, OrcVillageScene],
 }
 
 export default config;
