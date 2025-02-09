@@ -33,7 +33,7 @@ class OrcVillageScene extends Phaser.Scene {
         EnemyFunctions.loadEnemySpritesheets(this);
 
         // Sounds
-        this.load.audio('music01', ['assets/sounds/music01.mp3']);
+        this.load.audio('music01', ['assets/sounds/music/music01.mp3']);
         this.load.audio('swordAttackSound1', ['assets/sounds/sword-swing-1.ogg']);
         this.load.audio('hitSound1', ['assets/sounds/hit-flesh-01.mp3']);
         this.load.audio('hitSound2', ['assets/sounds/hit-flesh-02.mp3']);

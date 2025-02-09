@@ -2,13 +2,13 @@ import Phaser from 'phaser'
 
 export function loadEnemySpritesheets(scene) {
     // Orc Villager
-    scene.load.spritesheet('orcVillagerWalk', "/assets/Orc/Orc_Villager/orc_villager_walk.png", { frameWidth: 64, frameHeight: 64 });
-    scene.load.spritesheet('orcVillagerDeath', "/assets/Orc/Orc_Villager/orc_villager_death.png", { frameWidth: 64, frameHeight: 64 });
+    scene.load.spritesheet('orcVillagerWalk', "/assets/entities/Orc/Orc_Villager/orc_villager_walk.png", { frameWidth: 64, frameHeight: 64 });
+    scene.load.spritesheet('orcVillagerDeath', "/assets/entities/Orc/Orc_Villager/orc_villager_death.png", { frameWidth: 64, frameHeight: 64 });
 
     // Orc Warrior
-    scene.load.spritesheet('orcWarriorWalk', "/assets/Orc/Orc_Warrior/orc_warrior_walk.png", { frameWidth: 64, frameHeight: 64 });
-    scene.load.spritesheet('orcWarriorHurt', "/assets/Orc/Orc_Warrior/orc_warrior_hurt.png", { frameWidth: 64, frameHeight: 64 });
-    scene.load.spritesheet('orcWarriorDeath', "/assets/Orc/Orc_Warrior/orc_warrior_death.png", { frameWidth: 64, frameHeight: 64 });
+    scene.load.spritesheet('orcWarriorWalk', "/assets/entities/Orc/Orc_Warrior/orc_warrior_walk.png", { frameWidth: 64, frameHeight: 64 });
+    scene.load.spritesheet('orcWarriorHurt', "/assets/entities/Orc/Orc_Warrior/orc_warrior_hurt.png", { frameWidth: 64, frameHeight: 64 });
+    scene.load.spritesheet('orcWarriorDeath', "/assets/entities/Orc/Orc_Warrior/orc_warrior_death.png", { frameWidth: 64, frameHeight: 64 });
 }
 
 export function loadEnemyAnimations(scene) {
