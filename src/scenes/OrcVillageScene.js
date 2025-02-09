@@ -59,7 +59,7 @@ class OrcVillageScene extends Phaser.Scene {
         this.enemies = this.physics.add.group();
 
         // Enemy creation
-        this.createEnemies(10, 'orcVillager')
+        this.createEnemies(20, 'orcVillager')
 
 
         // Create cursor keys for player movement
@@ -95,10 +95,10 @@ class OrcVillageScene extends Phaser.Scene {
                 });
             } else if (player.hp <= 0) {
                 player.setVelocity(0, 0);
-                player.anims.play('playerDeath', true);
                 this.sound.play('playerDeath');
                 this.physics.world.disable(player);
-
+                player.anims.play('playerDeath', true);
+                
                 // Fade out the music and stop it
                 this.tweens.add({
                     targets: music,
@@ -184,12 +184,24 @@ class OrcVillageScene extends Phaser.Scene {
             }
         });
 
-        // Check if there's no enemies left
-        if (this.enemies.children.size === 0) {
-
-            if (this.player.exp >= 50) {
-                this.createEnemies(5, 'orcVillager');
+        // Check if there's not enough enemies on the screen
+        if (this.enemies.children.size < 13) {
+            const minute = Math.floor((this.time.now - this.startTime) / 60000);
+        
+            if (minute < 1) {
+                this.createEnemies(20, 'orcVillager');
+            } else if (minute < 2) {
+                this.createEnemies(15, 'orcVillager');
                 this.createEnemies(5, 'orcWarrior');
+            } else if (minute < 3) {
+                this.createEnemies(13, 'orcVillager');
+                this.createEnemies(7, 'orcWarrior');
+            } else if (minute < 4) {
+                this.createEnemies(10, 'orcVillager');
+                this.createEnemies(10, 'orcWarrior');
+            } else if (minute < 5) {
+                this.createEnemies(8, 'orcVillager');
+                this.createEnemies(12, 'orcWarrior');
             }
         }
 

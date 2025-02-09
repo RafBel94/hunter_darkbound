@@ -29,6 +29,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     updateMovementAndAttack(wasd, space) {
+        if (this.hp <= 0) {
+            return; // Do not allow movement or attack if the player is dead
+        }
+
         const { left: a, right: d, up: w, down: s } = wasd;
 
         // Player movement animation
