@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import Player from '../entities/Player.js'
 import Orc from '../entities/OrcVillager.js'
 import OrcWarrior from '../entities/OrcWarrior.js'
+import OrcLord from '../entities/OrcLord.js'
 import { sizes } from '../config/config.js'
 import * as EnemyFunctions from '../functions/EnemyFunctions.js'
 import * as PlayerFunctions from '../functions/PlayerFunctions.js'
@@ -99,7 +100,7 @@ class OrcVillageScene extends Phaser.Scene {
                 this.sound.play('playerDeath');
                 this.physics.world.disable(player);
                 player.anims.play('playerDeath', true);
-                
+
                 // Fade out the music and stop it
                 this.tweens.add({
                     targets: music,
@@ -134,6 +135,9 @@ class OrcVillageScene extends Phaser.Scene {
                     break;
                 case 'orcWarrior':
                     enemy = new OrcWarrior(this, x, y);
+                    break;
+                case 'orcLord':
+                    enemy = new OrcLord(this, x, y);
                     break;
             }
             this.enemies.add(enemy);
@@ -183,6 +187,8 @@ class OrcVillageScene extends Phaser.Scene {
                     enemy.followPlayer(this.player, 'orcVillagerWalk');
                 } else if (enemy instanceof OrcWarrior) {
                     enemy.followPlayer(this.player, 'orcWarriorWalk');
+                } else if (enemy instanceof OrcLord) {
+                    enemy.followPlayer(this.player, 'orcLordWalk');
                 }
             }
         });
@@ -190,14 +196,13 @@ class OrcVillageScene extends Phaser.Scene {
         // Check if there's not enough enemies on the screen
         if (this.enemies.children.size < 13) {
             const minute = Math.floor((this.time.now - this.startTime) / 60000);
-        
+
             this.spawnEnemies(minute);
         }
 
         // Spawn additional enemies every 10 seconds
         const spawnInterval = 10000;
         if (this.time.now - this.lastSpawnTime > spawnInterval) {
-            console.log('Spawning additional enemies');
             this.lastSpawnTime = this.time.now;
             this.spawnAdditionalEnemies();
         }
@@ -224,6 +229,20 @@ class OrcVillageScene extends Phaser.Scene {
         } else if (minute < 5) {
             this.createEnemies(8, 'orcVillager');
             this.createEnemies(12, 'orcWarrior');
+        } else if (minute < 6) {
+            this.createEnemies(7, 'orcVillager');
+            this.createEnemies(10, 'orcWarrior');
+            this.createEnemies(3, 'orcLord');
+        } else if (minute < 7) {
+            this.createEnemies(5, 'orcVillager');
+            this.createEnemies(9, 'orcWarrior');
+            this.createEnemies(6, 'orcLord');
+        } else if (minute < 8) {
+            this.createEnemies(10, 'orcWarrior');
+            this.createEnemies(10, 'orcLord');
+        } else if (minute < 9) {
+            this.createEnemies(12, 'orcWarrior');
+            this.createEnemies(12, 'orcLord');
         }
     }
 
@@ -231,19 +250,27 @@ class OrcVillageScene extends Phaser.Scene {
         const minute = Math.floor((this.time.now - this.startTime) / 60000);
         let orcVillagerCount = 5;
         let orcWarriorCount = 0;
+        let orcLordCount = 0;
 
-        // Increase the number of enemies every 2 minutes
-        if (minute >= 1) {
-            orcVillagerCount += 3;
-            orcWarriorCount += 2;
-        }
-        if (minute >= 3) {
+        // Increase the number of enemies depending on the minute
+        if (minute >= 8) {
+            orcVillagerCount = 0;
             orcVillagerCount += 3;
             orcWarriorCount += 3;
+        } else if (minute >= 5) {
+            orcVillagerCount += 3;
+            orcWarriorCount += 3;
+        } else if (minute >= 3) {
+            orcVillagerCount += 3;
+            orcWarriorCount += 3;
+        } else if (minute >= 1) {
+            orcVillagerCount += 3;
+            orcWarriorCount += 2;
         }
 
         this.createEnemies(orcVillagerCount, 'orcVillager');
         this.createEnemies(orcWarriorCount, 'orcWarrior');
+        this.createEnemies(orcLordCount, 'orcLord');
     }
 
     updateClock() {
