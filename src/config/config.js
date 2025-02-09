@@ -1,5 +1,7 @@
 import OrcVillageScene from '../scenes/OrcVillageScene'
 import MenuScene from '../scenes/MenuScene';
+import GameOver from '../scenes/GameOver';
+import { Game } from 'phaser';
 
 export const sizes = {
     width: 1280,
@@ -19,7 +21,7 @@ const config = {
             debug: false
         }
     },
-    scene: [MenuScene, OrcVillageScene],
+    scene: [MenuScene, OrcVillageScene, GameOver],
 }
 
 export default config;

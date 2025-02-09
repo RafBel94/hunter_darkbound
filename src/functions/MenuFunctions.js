@@ -4,11 +4,11 @@ export function loadAssets(scene) {
     scene.load.bitmapFont('pixelfont', 'assets/fonts/minogram_6x10.png', 'assets/fonts/minogram_6x10.xml');
 
     // Preload background and misc assets
-    scene.load.image("menuBackground", "assets/images/backgrounds/menu-background.png")
+    scene.load.image("menuBackground", "assets/images/backgrounds/menuBackground.png")
     scene.load.image("title", "assets/images/texts/title01.png")
-    scene.load.spritesheet("button", "assets/images/buttons/startButton.png", { frameWidth: 300, frameHeight: 142 });
+    scene.load.spritesheet("button", "assets/images/buttons/button2.png", { frameWidth: 300, frameHeight: 142 });
     scene.load.spritesheet("OrcVillageMapButton", "assets/images/buttons/OrcVillageMapButton.png", { frameWidth: 300, frameHeight: 272 });
-    scene.load.spritesheet("unkownMapButton", "assets/images/buttons/UnkownMapButton.png", { frameWidth: 300, frameHeight: 272 });
+    scene.load.spritesheet("comingSoonButton", "assets/images/buttons/ComingSoonButton.png", { frameWidth: 300, frameHeight: 272 });
 
     // Sounds
     scene.load.audio('titleMusic', ['assets/sounds/music/titleMusic.mp3']);
@@ -18,7 +18,9 @@ export function loadAssets(scene) {
 }
 
 export function createStartButton(scene, titleMusic) {
-    const startButton = scene.add.image(sizes.width / 2, sizes.height - 160, "button").setDisplaySize(250, 100).setOrigin(0.5, 0).setInteractive();
+    const startButton = scene.add.image(sizes.width / 2, sizes.height - 140, "button").setDisplaySize(220, 80).setOrigin(0.5, 0).setInteractive();
+    scene.expText = scene.add.bitmapText(sizes.width / 2, sizes.height - 115, 'pixelfont', "Start", 35).setOrigin(0.5, 0);
+
     startButton.on('pointerover', () => {
         startButton.setFrame(1);
     });
@@ -37,8 +39,8 @@ function createMapButtons(scene, titleMusic) {
     scene.expText = scene.add.bitmapText(sizes.width / 2, sizes.height - 345, 'pixelfont', "Select a level", 40).setOrigin(0.5, 0);
 
     const button1 = scene.add.image(sizes.width / 2 - 400, sizes.height - 270, "OrcVillageMapButton").setDisplaySize(250, 222).setOrigin(0.5, 0).setInteractive();
-    const button2 = scene.add.image(sizes.width / 2, sizes.height - 270, "unkownMapButton").setDisplaySize(250, 222).setOrigin(0.5, 0).setInteractive();
-    const button3 = scene.add.image(sizes.width / 2 + 400, sizes.height - 270, "unkownMapButton").setDisplaySize(250, 222).setOrigin(0.5, 0).setInteractive();
+    const button2 = scene.add.image(sizes.width / 2, sizes.height - 270, "comingSoonButton").setDisplaySize(250, 222).setOrigin(0.5, 0).setInteractive();
+    const button3 = scene.add.image(sizes.width / 2 + 400, sizes.height - 270, "comingSoonButton").setDisplaySize(250, 222).setOrigin(0.5, 0).setInteractive();
 
     // Button 1
     button1.on('pointerover', () => {
@@ -65,6 +67,7 @@ function createMapButtons(scene, titleMusic) {
             // Fade out the menu scene and start the game
             scene.cameras.main.fadeOut(2000, 0, 0, 0);
             scene.cameras.main.once('camerafadeoutcomplete', () => {
+                scene.isLoadingNextScene = false;
                 scene.scene.start('OrcVillageScene');
             });
         }

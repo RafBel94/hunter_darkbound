@@ -9,11 +9,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         // Custom properties
         this.scene = scene;
         this.damage = 10;
-        this.velocity = 150;
+        this.velocity = 160;
+        this.exp = 0;
+        this.hp = 100;
         this.isAttacking = false;
         this.lastDirection = 'right';
-        this.exp = 0
-
+        this.isBeingHurt = false;
+        
         // Add the player to the scene
         scene.add.existing(this);
         scene.physics.add.existing(this);

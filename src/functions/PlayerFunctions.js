@@ -6,6 +6,7 @@ export function loadPlayerSpritesheets(scene) {
     scene.load.spritesheet('playerAttackRight', "/assets/entities/Soldier/Soldier/Soldier-Attack-Right.png", { frameWidth: 100, frameHeight: 100 });
     scene.load.spritesheet('playerAttackLeft', "/assets/entities/Soldier/Soldier/Soldier-Attack-Left.png", { frameWidth: 100, frameHeight: 100 });
     scene.load.spritesheet('playerAttackTop', "/assets/entities/Soldier/Soldier/Soldier-Attack-Top.png", { frameWidth: 100, frameHeight: 100 });
+    scene.load.spritesheet('playerDeath', "/assets/entities/Soldier/Soldier/Soldier-Death.png", { frameWidth: 100, frameHeight: 100 });
 }
 
 export function loadPlayerAnimations(scene) {
@@ -49,6 +50,12 @@ export function loadPlayerAnimations(scene) {
         key: 'attackTop',
         frames: scene.anims.generateFrameNumbers('playerAttackTop', { start: 0, end: 5 }),
         frameRate: 10,
+        repeat: 0
+    });
+    scene.anims.create({
+        key: 'playerDeath',
+        frames: scene.anims.generateFrameNumbers('playerDeath', { start: 0, end: 3 }),
+        frameRate: 5,
         repeat: 0
     });
 }

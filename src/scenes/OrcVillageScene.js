@@ -24,7 +24,6 @@ class OrcVillageScene extends Phaser.Scene {
 
         // Preload background and misc assets
         this.load.image("orcVillageBackground", "assets/images/backgrounds/OrcVillageMap.png")
-        // this.load.image("bg", "assets/images/backgrounds/testing.png")
 
         // Preload player animations
         PlayerFunctions.loadPlayerSpritesheets(this);
@@ -33,15 +32,18 @@ class OrcVillageScene extends Phaser.Scene {
         EnemyFunctions.loadEnemySpritesheets(this);
 
         // Sounds
-        this.load.audio('music01', ['assets/sounds/music/music01.mp3']);
+        this.load.audio('music', ['assets/sounds/music/music01.mp3']);
         this.load.audio('swordAttackSound1', ['assets/sounds/sword-swing-1.ogg']);
         this.load.audio('hitSound1', ['assets/sounds/hit-flesh-01.mp3']);
         this.load.audio('hitSound2', ['assets/sounds/hit-flesh-02.mp3']);
+        this.load.audio('playerHurt', ['assets/sounds/playerHurt.mp3']);
+        this.load.audio('playerDeath', ['assets/sounds/playerDeathSound.mp3']);
         this.sound.volume = 0.5;
     }
 
     create() {
-        this.sound.play('music01', { loop: true, volume: 0.3 });
+        const music = this.sound.add('music', { loop: true, volume: 0.8 });
+        music.play();
         this.add.image(0, 0, "orcVillageBackground").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
 
         // Enemy functions
@@ -81,6 +83,41 @@ class OrcVillageScene extends Phaser.Scene {
         this.clockText = this.add.bitmapText(sizes.width / 2, 20, 'pixelfont', "00:00", 40);
         this.startTime = this.time.now;
 
+        // Create overlap collider for when any enemy hitbox collides with the player hitbox
+        this.physics.add.overlap(this.player, this.enemies.getChildren(), (player, enemy) => {
+            if (!player.hasBeenHit && player.hp > 0) {
+                this.sound.play('playerHurt');
+                player.hp -= enemy.damage;
+                player.hasBeenHit = true;
+
+                this.time.delayedCall(200, () => {
+                    player.hasBeenHit = false;
+                });
+            } else if (player.hp <= 0) {
+                player.setVelocity(0, 0);
+                player.anims.play('playerDeath', true);
+                this.sound.play('playerDeath');
+                this.physics.world.disable(player);
+
+                // Fade out the music and stop it
+                this.tweens.add({
+                    targets: music,
+                    volume: 0,
+                    duration: 4000,
+                    onComplete: () => {
+                        music.stop();
+                    }
+                });
+
+                // Fade out the menu scene and start the game
+                this.cameras.main.fadeOut(5000, 0, 0, 0);
+                this.cameras.main.once('camerafadeoutcomplete', () => {
+                    this.time.delayedCall(500, () => {
+                        this.scene.start('GameOver');
+                    });
+                });
+            }
+        });
     }
 
     createEnemies(n, type) {
