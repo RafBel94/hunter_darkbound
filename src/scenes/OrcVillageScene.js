@@ -15,6 +15,7 @@ class OrcVillageScene extends Phaser.Scene {
         this.player
         this.enemies = []
         this.startTime = 0
+        this.lastSpawnTime = 0
     }
 
     // This method preloads the assets
@@ -118,6 +119,8 @@ class OrcVillageScene extends Phaser.Scene {
                 });
             }
         });
+
+        this.lastSpawnTime = this.time.now;
     }
 
     createEnemies(n, type) {
@@ -188,21 +191,15 @@ class OrcVillageScene extends Phaser.Scene {
         if (this.enemies.children.size < 13) {
             const minute = Math.floor((this.time.now - this.startTime) / 60000);
         
-            if (minute < 1) {
-                this.createEnemies(20, 'orcVillager');
-            } else if (minute < 2) {
-                this.createEnemies(15, 'orcVillager');
-                this.createEnemies(5, 'orcWarrior');
-            } else if (minute < 3) {
-                this.createEnemies(13, 'orcVillager');
-                this.createEnemies(7, 'orcWarrior');
-            } else if (minute < 4) {
-                this.createEnemies(10, 'orcVillager');
-                this.createEnemies(10, 'orcWarrior');
-            } else if (minute < 5) {
-                this.createEnemies(8, 'orcVillager');
-                this.createEnemies(12, 'orcWarrior');
-            }
+            this.spawnEnemies(minute);
+        }
+
+        // Spawn additional enemies every 10 seconds
+        const spawnInterval = 10000;
+        if (this.time.now - this.lastSpawnTime > spawnInterval) {
+            console.log('Spawning additional enemies');
+            this.lastSpawnTime = this.time.now;
+            this.spawnAdditionalEnemies();
         }
 
         // Update player movement and attack
@@ -210,6 +207,43 @@ class OrcVillageScene extends Phaser.Scene {
 
         // Update the clock
         this.updateClock();
+    }
+
+    spawnEnemies(minute) {
+        if (minute < 1) {
+            this.createEnemies(20, 'orcVillager');
+        } else if (minute < 2) {
+            this.createEnemies(15, 'orcVillager');
+            this.createEnemies(5, 'orcWarrior');
+        } else if (minute < 3) {
+            this.createEnemies(13, 'orcVillager');
+            this.createEnemies(7, 'orcWarrior');
+        } else if (minute < 4) {
+            this.createEnemies(10, 'orcVillager');
+            this.createEnemies(10, 'orcWarrior');
+        } else if (minute < 5) {
+            this.createEnemies(8, 'orcVillager');
+            this.createEnemies(12, 'orcWarrior');
+        }
+    }
+
+    spawnAdditionalEnemies() {
+        const minute = Math.floor((this.time.now - this.startTime) / 60000);
+        let orcVillagerCount = 5;
+        let orcWarriorCount = 0;
+
+        // Increase the number of enemies every 2 minutes
+        if (minute >= 1) {
+            orcVillagerCount += 3;
+            orcWarriorCount += 2;
+        }
+        if (minute >= 3) {
+            orcVillagerCount += 3;
+            orcWarriorCount += 3;
+        }
+
+        this.createEnemies(orcVillagerCount, 'orcVillager');
+        this.createEnemies(orcWarriorCount, 'orcWarrior');
     }
 
     updateClock() {
