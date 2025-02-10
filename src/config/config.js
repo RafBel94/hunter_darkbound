@@ -8,6 +8,8 @@ export const sizes = {
     height: 720
 };
 
+export const difficulty = 1
+
 // Game configuration
 const config = {
     type: Phaser.WEBGL,

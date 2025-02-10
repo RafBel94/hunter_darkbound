@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import { sizes } from '../config/config.js'
+import { sizes, difficulty } from '../config/config.js'
 import * as MenuFunctions from '../functions/MenuFunctions.js'
 
 class MenuScene extends Phaser.Scene {
@@ -19,6 +19,7 @@ class MenuScene extends Phaser.Scene {
         this.add.image(0, 0, "menuBackground").setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
         this.add.image(sizes.width / 2, -90, "title").setDisplaySize(650, 550).setOrigin(0.5, 0)
 
+        MenuFunctions.createOptionsButton(this);
         MenuFunctions.createStartButton(this, titleMusic);
     }
 
