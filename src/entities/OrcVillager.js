@@ -1,6 +1,6 @@
 import Enemy from './Enemy.js';
 
-class Orc extends Enemy{
+class OrcVillager extends Enemy{
     constructor(scene, x, y, {texture = 'orcIdle', velocity = 100, damage = 2, hp = 10, exp = 5} = {}) {
         super(scene, x, y, texture, velocity, damage, hp, exp);
 
@@ -12,4 +12,4 @@ class Orc extends Enemy{
     }
 }
 
-export default Orc;
+export default OrcVillager;

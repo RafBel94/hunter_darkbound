@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import Orc from '../entities/OrcVillager.js'
+import OrcVillager from '../entities/OrcVillager.js'
 import OrcWarrior from '../entities/OrcWarrior.js'
 import OrcLord from '../entities/OrcLord.js'
 
@@ -177,7 +177,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                             this.scene.sound.play('hitSound1', false);
                             enemy.setVelocity(0, 0);
                 
-                            if (enemy instanceof Orc) {
+                            if (enemy instanceof OrcVillager) {
                                 enemy.anims.play('orcVillagerDeath', true);
                             } else if (enemy instanceof OrcWarrior) {
                                 enemy.anims.play('orcWarriorDeath', true);
