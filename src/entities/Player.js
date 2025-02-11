@@ -164,7 +164,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                     .setImmovable(true);
 
                 // Check if the hitbox collides with any enemy
-                this.scene.physics.add.overlap(hitBox, this.scene.enemies.getChildren(), (hitBox, enemy) => {
+                let overlap = this.scene.physics.add.overlap(hitBox, this.scene.enemies.getChildren(), (hitBox, enemy) => {
                     if (!enemy.hasBeenHit) {
                         enemy.hp -= this.damage;
                         enemy.hasBeenHit = true;
@@ -209,7 +209,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             });
 
             // Destroy the hitbox
-            this.scene.time.delayedCall(100, () => {
+            this.scene.time.delayedCall(200, () => {
+                this.scene.physics.world.remove(hitBox);
                 hitBox.destroy();
             });
         }
