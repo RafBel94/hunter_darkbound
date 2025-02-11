@@ -132,8 +132,7 @@ export function createEnemies(n, type, enemies, scene) {
         }
         scene.enemies.add(enemy);
 
-        // TODO - THIS GIVES MASSIVE LAG WHEN MANY ENEMIES ARE COLLIDING
-        scene.physics.add.collider(enemies, enemies);
+        scene.physics.add.collider(enemy, enemies);
     }
 }
 
