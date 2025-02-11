@@ -17,7 +17,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.lastDirection = 'right';
         this.isBeingHurt = false;
         this._attackOverlap;
-        
+        this._dashCooldown = 0;
+        this._isDashing = false;
+
         // Add the player to the scene
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -30,8 +32,43 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.setCollideWorldBounds(true);
     }
 
+    dash(wasd, shift) {
+        const { left: a, right: d, up: w, down: s } = wasd;
+
+        if (Phaser.Input.Keyboard.JustDown(shift) && this._dashCooldown === 0 && !this._isDashing) {
+            this._isDashing = true;
+            this._dashCooldown = 8000;
+
+            let dashVelocityX = 0;
+            let dashVelocityY = 0;
+
+            if (a.isDown) {
+                dashVelocityX = -this.velocity * 3;
+            } else if (d.isDown) {
+                dashVelocityX = this.velocity * 3;
+            }
+
+            if (w.isDown) {
+                dashVelocityY = -this.velocity * 3;
+            } else if (s.isDown) {
+                dashVelocityY = this.velocity * 3;
+            }
+
+            this.setVelocity(dashVelocityX, dashVelocityY);
+
+            this.scene.time.delayedCall(250, () => {
+                this._isDashing = false;
+                this.setVelocity(160);
+            });
+
+            this.scene.time.delayedCall(8000, () => {
+                this._dashCooldown = 0;
+            });
+        }
+    }
+
     updateMovementAndAttack(wasd, space) {
-        if (this.hp <= 0) {
+        if (this.hp <= 0 || this._isDashing) {
             return; // Do not allow movement or attack if the player is dead
         }
 
@@ -169,15 +206,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                     if (!enemy.hasBeenHit) {
                         enemy.hp -= this.damage;
                         enemy.hasBeenHit = true;
-                        
+
                         this.scene.time.delayedCall(500, () => {
                             enemy.hasBeenHit = false;
                         });
-                        
+
                         if (enemy && enemy.hp <= 0) {
                             this.scene.sound.play('hitSound1', false);
                             enemy.setVelocity(0, 0);
-                
+
                             if (enemy instanceof OrcVillager) {
                                 enemy.anims.play('orcVillagerDeath', true);
                             } else if (enemy instanceof OrcWarrior) {
@@ -185,10 +222,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                             } else if (enemy instanceof OrcLord) {
                                 enemy.anims.play('orcLordDeath', true);
                             }
-                
-                
+
+
                             this.scene.physics.world.disable(enemy);
-                
+
                             this.exp += enemy.exp;
                             this.scene.expText.setText(`Exp: ${this.exp}`);
                             enemy.once('animationcomplete', () => {

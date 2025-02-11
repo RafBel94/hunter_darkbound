@@ -75,6 +75,9 @@ class OrcVillageScene extends Phaser.Scene {
             right: Phaser.Input.Keyboard.KeyCodes.D
         });
 
+        // Create shift key for player dashing
+        this.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+
         // Create Escape key to pause the game
         this.escape = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
@@ -125,6 +128,9 @@ class OrcVillageScene extends Phaser.Scene {
 
         // Update player movement and attack
         this.player.updateMovementAndAttack(this.wasd, this.cursor.space);
+
+        // Player dash
+        this.player.dash(this.wasd, this.shift);
 
         // Update the clock
         this.updateClock();
