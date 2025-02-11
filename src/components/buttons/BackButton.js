@@ -68,6 +68,21 @@ export class BackButton extends Button {
                 this.scene.controlsButton.destroy();
             }
 
+            // Remove easy button
+            if (this.scene.easyButton) {
+                this.scene.easyButton.destroy();
+            }
+
+            // Remove normal button
+            if (this.scene.normalButton) {
+                this.scene.normalButton.destroy();
+            }
+
+            // Remove hard button
+            if (this.scene.hardButton) {
+                this.scene.hardButton.destroy();
+            }
+
             this.destroy();
         });
     }

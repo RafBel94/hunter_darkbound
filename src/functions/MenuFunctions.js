@@ -16,6 +16,9 @@ export function loadAssets(scene) {
     scene.load.spritesheet("button", "assets/images/buttons/button2.png", { frameWidth: 300, frameHeight: 142 });
     scene.load.spritesheet("startButton", "assets/images/buttons/startButton.png", { frameWidth: 300, frameHeight: 142 });
     scene.load.spritesheet("aboutButton", "assets/images/buttons/aboutButton.png", { frameWidth: 300, frameHeight: 142 });
+    scene.load.spritesheet("easyButton", "assets/images/buttons/easyButton.png", { frameWidth: 300, frameHeight: 142 });
+    scene.load.spritesheet("normalButton", "assets/images/buttons/normalButton.png", { frameWidth: 300, frameHeight: 142 });
+    scene.load.spritesheet("hardButton", "assets/images/buttons/hardButton.png", { frameWidth: 300, frameHeight: 142 });
     scene.load.spritesheet("difficultyButton", "assets/images/buttons/difficultyButton.png", { frameWidth: 300, frameHeight: 142 });
     scene.load.spritesheet("controlsButton", "assets/images/buttons/controlsButton.png", { frameWidth: 300, frameHeight: 142 });
     scene.load.spritesheet("orcVillageMapButton", "assets/images/buttons/OrcVillageMapButton.png", { frameWidth: 300, frameHeight: 272 });

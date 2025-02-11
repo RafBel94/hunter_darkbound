@@ -1,4 +1,4 @@
-import { sizes } from '../config/config.js';
+import { sizes, difficulty } from '../config/config.js';
 import OrcVillager from '../entities/OrcVillager.js';
 import OrcWarrior from '../entities/OrcWarrior.js';
 import OrcLord from '../entities/OrcLord.js';
@@ -132,41 +132,33 @@ export function createEnemies(n, type, enemies, scene) {
         }
         scene.enemies.add(enemy);
 
+        // TODO - THIS GIVES MASSIVE LAG WHEN MANY ENEMIES ARE COLLIDING
         scene.physics.add.collider(enemies, enemies);
     }
 }
 
 export function spawnEnemiesByMinute(scene, enemies) {
+    const enemyConfigurations = [
+        { minute: 1, orcVillager: 20, orcWarrior: 0, orcLord: 0 },
+        { minute: 2, orcVillager: 15, orcWarrior: 5, orcLord: 0 },
+        { minute: 3, orcVillager: 13, orcWarrior: 7, orcLord: 0 },
+        { minute: 4, orcVillager: 10, orcWarrior: 10, orcLord: 0 },
+        { minute: 5, orcVillager: 8, orcWarrior: 12, orcLord: 0 },
+        { minute: 6, orcVillager: 7, orcWarrior: 10, orcLord: 3 },
+        { minute: 7, orcVillager: 5, orcWarrior: 9, orcLord: 6 },
+        { minute: 8, orcVillager: 0, orcWarrior: 10, orcLord: 10 },
+        { minute: 9, orcVillager: 0, orcWarrior: 12, orcLord: 12 }
+    ];
+
     let minute = Math.floor((scene.time.now - scene.startTime) / 60000);
 
-    if (minute < 1) {
-        createEnemies(20, 'orcVillager', enemies, scene);
-    } else if (minute < 2) {
-        createEnemies(15, 'orcVillager', enemies, scene);
-        createEnemies(5, 'orcWarrior', enemies, scene);
-    } else if (minute < 3) {
-        createEnemies(13, 'orcVillager', enemies, scene);
-        createEnemies(7, 'orcWarrior', enemies, scene);
-    } else if (minute < 4) {
-        createEnemies(10, 'orcVillager', enemies, scene);
-        createEnemies(10, 'orcWarrior', enemies, scene);
-    } else if (minute < 5) {
-        createEnemies(8, 'orcVillager', enemies, scene);
-        createEnemies(12, 'orcWarrior', enemies, scene);
-    } else if (minute < 6) {
-        createEnemies(7, 'orcVillager', enemies, scene);
-        createEnemies(10, 'orcWarrior', enemies, scene);
-        createEnemies(3, 'orcLord', enemies, scene);
-    } else if (minute < 7) {
-        createEnemies(5, 'orcVillager', enemies, scene);
-        createEnemies(9, 'orcWarrior', enemies, scene);
-        createEnemies(6, 'orcLord', enemies, scene);
-    } else if (minute < 8) {
-        createEnemies(10, 'orcWarrior', enemies, scene);
-        createEnemies(10, 'orcLord', enemies, scene);
-    } else if (minute < 9) {
-        createEnemies(12, 'orcWarrior', enemies, scene);
-        createEnemies(12, 'orcLord', enemies, scene);
+    for (let config of enemyConfigurations) {
+        if (minute < config.minute) {
+            createEnemies(Math.ceil(config.orcVillager * (1 + (difficulty - 1) * 0.5)), 'orcVillager', enemies, scene);
+            createEnemies(Math.ceil(config.orcWarrior * (1 + (difficulty - 1) * 0.5)), 'orcWarrior', enemies, scene);
+            createEnemies(Math.ceil(config.orcLord * (1 + (difficulty - 1) * 0.5)), 'orcLord', enemies, scene);
+            break;
+        }
     }
 }
 
@@ -179,11 +171,12 @@ export function spawnAdditionalEnemies(scene) {
     // Increase the number of enemies depending on the minute
     if (minute >= 8) {
         orcVillagerCount = 0;
-        orcVillagerCount += 3;
         orcWarriorCount += 3;
+        orcLordCount += 3;
     } else if (minute >= 5) {
         orcVillagerCount += 3;
         orcWarriorCount += 3;
+        orcLordCount += 1;
     } else if (minute >= 3) {
         orcVillagerCount += 3;
         orcWarriorCount += 3;
@@ -191,6 +184,11 @@ export function spawnAdditionalEnemies(scene) {
         orcVillagerCount += 3;
         orcWarriorCount += 2;
     }
+
+    // Apply difficulty factor
+    orcVillagerCount = Math.ceil(orcVillagerCount * (1 + (difficulty - 1) * 0.5));
+    orcWarriorCount = Math.ceil(orcWarriorCount * (1 + (difficulty - 1) * 0.5));
+    orcLordCount = Math.ceil(orcLordCount * (1 + (difficulty - 1) * 0.5));
 
     createEnemies(orcVillagerCount, 'orcVillager', scene.enemies.getChildren(), scene);
     createEnemies(orcWarriorCount, 'orcWarrior', scene.enemies.getChildren(), scene);

@@ -15,6 +15,9 @@ class MenuScene extends Phaser.Scene {
         this.difficultyButton;
         this.aboutButton;
         this.controlsButton;
+        this.easyButton;
+        this.normalButton;
+        this.hardButton;
         this.controlsPanel;
         this.settingsPanel;
         this.aboutPanel;
