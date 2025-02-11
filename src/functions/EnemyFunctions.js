@@ -197,7 +197,7 @@ export function spawnAdditionalEnemies(scene) {
 // Calculate the spawn zone for the enemies
 function calculateSpawnZone() {
     let x, y;
-    const margin = 100;
+    const margin = 50;
     const screenWidth = sizes.width;
     const screenHeight = sizes.height;
     const zone = Phaser.Math.Between(1, 4);

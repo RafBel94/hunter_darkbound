@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import OrcVillager from '../entities/OrcVillager.js'
 import OrcWarrior from '../entities/OrcWarrior.js'
 import OrcLord from '../entities/OrcLord.js'
+import GreenGem from '../items/GreenGem.js'
 
 class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture) {
@@ -226,8 +227,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
                             this.scene.physics.world.disable(enemy);
 
-                            this.exp += enemy.exp;
-                            this.scene.expText.setText(`Exp: ${this.exp}`);
+                            // Drop experience gem
+                            let gem = new GreenGem(this.scene, enemy.x, enemy.y, 'greenGem', 0).setDisplaySize(10,14);
+                            this.scene.gems.push(gem);
+
+                            // Create gem and player overlap
+                            this.scene.physics.add.overlap(this, gem, (player, gem) => {
+                                this.exp += gem.exp;
+                                this.scene.expText.setText(`Exp: ${this.exp}`);
+                                gem.destroy();
+                            });
+
                             enemy.once('animationcomplete', () => {
                                 this.scene.time.delayedCall(400, () => {
                                     if (enemy) {

@@ -15,6 +15,7 @@ class OrcVillageScene extends Phaser.Scene {
         super("OrcVillageScene")
         this.player
         this.enemies = []
+        this.gems = []
         this.startTime = 0
         this.lastSpawnTime = 0
     }
@@ -26,7 +27,10 @@ class OrcVillageScene extends Phaser.Scene {
 
         // Preload background and misc assets
         this.load.image("orcVillageBackground", "assets/images/backgrounds/OrcVillageMapNight.png")
-
+        this.load.spritesheet("greenGem", "assets/images/items/greenGem.png", { frameWidth: 71, frameHeight: 139 });
+        this.load.spritesheet("blueGem", "assets/images/items/blueGem.png", { frameWidth: 71, frameHeight: 139 });
+        this.load.spritesheet("yellowGem", "assets/images/items/yellowGem.png", { frameWidth: 71, frameHeight: 139 });
+        
         // Preload player animations
         PlayerFunctions.loadPlayerSpritesheets(this);
 
