@@ -233,7 +233,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                             // Drop experience gem
                             let gem = null;
                             if (enemy instanceof OrcVillager) {
-                                gem = new GreenGem(this.scene, enemy.x, enemy.y, 'greenGem', 0).setDisplaySize(10,14);
+                                gem = new GreenGem(this.scene, enemy.x, enemy.y, 'greenGem', 0).setDisplaySize(10,14).setSize(300,350);
                             } else if (enemy instanceof OrcWarrior) {
                                 gem = new BlueGem(this.scene, enemy.x, enemy.y, 'blueGem', 0).setDisplaySize(10,14);
                             } else if (enemy instanceof OrcLord) {

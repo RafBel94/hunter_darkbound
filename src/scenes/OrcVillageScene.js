@@ -15,6 +15,8 @@ class OrcVillageScene extends Phaser.Scene {
         super("OrcVillageScene")
         this.player
         this.enemies = []
+        this.lifeIcon;
+        this.lifeText;
         this.gems = []
         this.startTime = 0
         this.lastSpawnTime = 0
@@ -30,6 +32,7 @@ class OrcVillageScene extends Phaser.Scene {
         this.load.spritesheet("greenGem", "assets/images/items/greenGem.png", { frameWidth: 71, frameHeight: 139 });
         this.load.spritesheet("blueGem", "assets/images/items/blueGem.png", { frameWidth: 71, frameHeight: 139 });
         this.load.spritesheet("yellowGem", "assets/images/items/yellowGem.png", { frameWidth: 71, frameHeight: 139 });
+        this.load.spritesheet("lifeIcon", "assets/images/icons/lifeSprite.png", { frameWidth: 36, frameHeight: 36 });
         
         // Preload player animations
         PlayerFunctions.loadPlayerSpritesheets(this);
@@ -52,27 +55,29 @@ class OrcVillageScene extends Phaser.Scene {
     create() {
         const music = this.sound.add('music', { loop: true, volume: 0.8 });
         music.play();
-        this.add.image(0, 0, "orcVillageBackground").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
 
+        this.add.image(0, 0, "orcVillageBackground").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
+        this.add.image(sizes.width - 130, 40, "lifeIcon")
+        
         // Enemy functions
         EnemyFunctions.loadOrcAnimations(this);
-
+        
         // Create player animations
         PlayerFunctions.loadPlayerAnimations(this);
-
+        
         // Player creation
         this.player = new Player(this, sizes.width / 2, sizes.height / 2);
-
+        
         // Create a physics group for enemies
         this.enemies = this.physics.add.group();
-
+        
         // Enemy creation
         EnemyFunctions.createEnemies(20, 'orcVillager', this.enemies, this);
-
-
+        
+        
         // Create cursor keys for player movement
         this.cursor = this.input.keyboard.createCursorKeys();
-
+        
         // Create WASD keys for player movement
         this.wasd = this.input.keyboard.addKeys({
             up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -80,20 +85,21 @@ class OrcVillageScene extends Phaser.Scene {
             left: Phaser.Input.Keyboard.KeyCodes.A,
             right: Phaser.Input.Keyboard.KeyCodes.D
         });
-
+        
         // Create shift key for player dashing
         this.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
-
+        
         // Create Escape key to pause the game
         this.escape = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-
+        
         // Create the text to display the player's experience
         this.expText = this.add.bitmapText(20, 20, 'pixelfont', "Exp: 0", 30).setOrigin(0, 0);
-
+        
         // Clock Text
         this.clockText = this.add.bitmapText(sizes.width / 2, 20, 'pixelfont', "00:00", 40);
         this.startTime = this.time.now;
-
+        this.lifeText = this.add.bitmapText(sizes.width - 95, 27, 'pixelfont', this.player.hp, 28);
+        
         // Create overlap collider for when the player hitbox collides with the enemy hitbox
         EnemyFunctions.createEnemyHitCollider(this, this.enemies.getChildren(), this.player, music);
 
