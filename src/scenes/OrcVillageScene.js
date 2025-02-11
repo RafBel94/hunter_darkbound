@@ -42,6 +42,8 @@ class OrcVillageScene extends Phaser.Scene {
         this.load.audio('swordAttackSound1', ['assets/sounds/sword-swing-1.ogg']);
         this.load.audio('hitSound1', ['assets/sounds/hit-flesh-01.mp3']);
         this.load.audio('hitSound2', ['assets/sounds/hit-flesh-02.mp3']);
+        this.load.audio('dashSound', ['assets/sounds/dash.mp3']);
+        this.load.audio('gemSound', ['assets/sounds/gem.mp3']);
         this.load.audio('playerHurt', ['assets/sounds/playerHurt.mp3']);
         this.load.audio('playerDeath', ['assets/sounds/playerDeathSound.mp3']);
         this.sound.volume = 0.5;

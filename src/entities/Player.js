@@ -3,6 +3,8 @@ import OrcVillager from '../entities/OrcVillager.js'
 import OrcWarrior from '../entities/OrcWarrior.js'
 import OrcLord from '../entities/OrcLord.js'
 import GreenGem from '../items/GreenGem.js'
+import BlueGem from '../items/BlueGem.js'
+import YellowGem from '../items/YellowGem.js'
 
 class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture) {
@@ -39,6 +41,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         if (Phaser.Input.Keyboard.JustDown(shift) && this._dashCooldown === 0 && !this._isDashing) {
             this._isDashing = true;
             this._dashCooldown = 8000;
+            this.scene.sound.play('dashSound', false);
 
             let dashVelocityX = 0;
             let dashVelocityY = 0;
@@ -228,11 +231,19 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                             this.scene.physics.world.disable(enemy);
 
                             // Drop experience gem
-                            let gem = new GreenGem(this.scene, enemy.x, enemy.y, 'greenGem', 0).setDisplaySize(10,14);
+                            let gem = null;
+                            if (enemy instanceof OrcVillager) {
+                                gem = new GreenGem(this.scene, enemy.x, enemy.y, 'greenGem', 0).setDisplaySize(10,14);
+                            } else if (enemy instanceof OrcWarrior) {
+                                gem = new BlueGem(this.scene, enemy.x, enemy.y, 'blueGem', 0).setDisplaySize(10,14);
+                            } else if (enemy instanceof OrcLord) {
+                                gem = new YellowGem(this.scene, enemy.x, enemy.y, 'yellowGem', 0).setDisplaySize(10,14);
+                            }
                             this.scene.gems.push(gem);
 
                             // Create gem and player overlap
                             this.scene.physics.add.overlap(this, gem, (player, gem) => {
+                                this.scene.sound.play('gemSound', false);
                                 this.exp += gem.exp;
                                 this.scene.expText.setText(`Exp: ${this.exp}`);
                                 gem.destroy();
