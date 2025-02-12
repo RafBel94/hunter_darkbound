@@ -41,6 +41,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         if (Phaser.Input.Keyboard.JustDown(shift) && this._dashCooldown === 0 && !this._isDashing) {
             this._isDashing = true;
             this._dashCooldown = 8000;
+            this.scene.dashIcon.setFrame(1);
             this.scene.sound.play('dashSound', false);
 
             let dashVelocityX = 0;
@@ -67,6 +68,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
             this.scene.time.delayedCall(8000, () => {
                 this._dashCooldown = 0;
+                this.scene.dashIcon.setFrame(0);
             });
         }
     }

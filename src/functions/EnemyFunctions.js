@@ -79,6 +79,8 @@ export function loadOrcAnimations(scene) {
 export function createEnemyHitCollider(scene, enemies, player, music) {
     scene.physics.add.overlap(player, enemies, (player, enemy) => {
         if (!player.hasBeenHit && player.hp > 0) {
+            scene.lifeIcon.anims.play('lifeIconShake', true);
+            scene.lifeText.setText(player.hp);
             scene.sound.play('playerHurt');
             player.hp -= enemy.damage;
             player.hasBeenHit = true;
@@ -87,6 +89,8 @@ export function createEnemyHitCollider(scene, enemies, player, music) {
                 player.hasBeenHit = false;
             });
         } else if (player.hp <= 0) {
+            scene.lifeIcon.anims.play('lifeIconShake', true);
+            scene.lifeText.setText(player.hp);
             player.setVelocity(0, 0);
             scene.sound.play('playerDeath');
             scene.physics.world.disable(player);

@@ -15,6 +15,7 @@ class OrcVillageScene extends Phaser.Scene {
         super("OrcVillageScene")
         this.player
         this.enemies = []
+        this.dashIcon;
         this.lifeIcon;
         this.lifeText;
         this.gems = []
@@ -29,10 +30,12 @@ class OrcVillageScene extends Phaser.Scene {
 
         // Preload background and misc assets
         this.load.image("orcVillageBackground", "assets/images/backgrounds/OrcVillageMapNight.png")
+        this.load.image("panel1Double", "assets/images/panels/panel1-Double.png")
         this.load.spritesheet("greenGem", "assets/images/items/greenGem.png", { frameWidth: 71, frameHeight: 139 });
         this.load.spritesheet("blueGem", "assets/images/items/blueGem.png", { frameWidth: 71, frameHeight: 139 });
         this.load.spritesheet("yellowGem", "assets/images/items/yellowGem.png", { frameWidth: 71, frameHeight: 139 });
         this.load.spritesheet("lifeIcon", "assets/images/icons/lifeSprite.png", { frameWidth: 36, frameHeight: 36 });
+        this.load.spritesheet("dashIcon", "assets/images/icons/dashIcon.png", { frameWidth: 34, frameHeight: 34 });
         
         // Preload player animations
         PlayerFunctions.loadPlayerSpritesheets(this);
@@ -57,7 +60,6 @@ class OrcVillageScene extends Phaser.Scene {
         music.play();
 
         this.add.image(0, 0, "orcVillageBackground").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
-        this.add.image(sizes.width - 130, 40, "lifeIcon")
         
         // Enemy functions
         EnemyFunctions.loadOrcAnimations(this);
@@ -91,19 +93,31 @@ class OrcVillageScene extends Phaser.Scene {
         
         // Create Escape key to pause the game
         this.escape = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+
+        // Panels
+        this.add.image(sizes.width - 80, 10, 'panel1Double').setDisplaySize(140, 150).setOrigin(0.5, 0);
         
-        // Create the text to display the player's experience
-        this.expText = this.add.bitmapText(20, 20, 'pixelfont', "Exp: 0", 30).setOrigin(0, 0);
-        
-        // Clock Text
-        this.clockText = this.add.bitmapText(sizes.width / 2, 20, 'pixelfont', "00:00", 40);
+        // Texts
         this.startTime = this.time.now;
-        this.lifeText = this.add.bitmapText(sizes.width - 95, 27, 'pixelfont', this.player.hp, 28);
+        this.clockText = this.add.bitmapText(sizes.width / 2, 20, 'pixelfont', "00:00", 40);
+        this.expText = this.add.bitmapText(sizes.width - 59, 112, 'pixelfont', "0", 30).setOrigin(0.5, 0);
+        this.lifeText = this.add.bitmapText(sizes.width - 59, 28, 'pixelfont', this.player.hp, 28).setOrigin(0.5, 0);
+
+        // Icons
+        this.lifeIcon = this.add.sprite(sizes.width - 113, 41, 'lifeIcon');
+        this.dashIcon = this.add.sprite(50, 50, 'dashIcon').setScale(1.5);
         
         // Create overlap collider for when the player hitbox collides with the enemy hitbox
         EnemyFunctions.createEnemyHitCollider(this, this.enemies.getChildren(), this.player, music);
 
         this.lastSpawnTime = this.time.now;
+
+        this.anims.create({
+            key: 'lifeIconShake',
+            frames: this.anims.generateFrameNumbers('lifeIcon', { start: 0, end: 4 }),
+            frameRate: 10,
+            repeat: 0
+        });
     }
 
     // This method is called every frame and updates the game logic and objects

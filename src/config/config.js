@@ -3,8 +3,8 @@ import MenuScene from '../scenes/MenuScene';
 import GameOver from '../scenes/GameOver';
 
 export const sizes = {
-    width: 1280,
-    height: 720
+    width: 1440,
+    height: 900
 };
 
 export let difficulty = 2
