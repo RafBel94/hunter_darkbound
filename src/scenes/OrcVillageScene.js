@@ -31,6 +31,7 @@ class OrcVillageScene extends Phaser.Scene {
         // Preload background and misc assets
         this.load.image("orcVillageBackground", "assets/images/backgrounds/OrcVillageMapNight.png")
         this.load.image("panel1Double", "assets/images/panels/panel1-Double.png")
+        this.load.image("levelIcon", "assets/images/icons/levelIcon.png")
         this.load.spritesheet("greenGem", "assets/images/items/greenGem.png", { frameWidth: 71, frameHeight: 139 });
         this.load.spritesheet("blueGem", "assets/images/items/blueGem.png", { frameWidth: 71, frameHeight: 139 });
         this.load.spritesheet("yellowGem", "assets/images/items/yellowGem.png", { frameWidth: 71, frameHeight: 139 });
@@ -100,12 +101,13 @@ class OrcVillageScene extends Phaser.Scene {
         // Texts
         this.startTime = this.time.now;
         this.clockText = this.add.bitmapText(sizes.width / 2, 20, 'pixelfont', "00:00", 40);
-        this.expText = this.add.bitmapText(sizes.width - 59, 112, 'pixelfont', "0", 30).setOrigin(0.5, 0);
+        this.levelText = this.add.bitmapText(sizes.width - 59, 112, 'pixelfont', "1", 30).setOrigin(0.5, 0);
         this.lifeText = this.add.bitmapText(sizes.width - 59, 28, 'pixelfont', this.player.hp, 28).setOrigin(0.5, 0);
-
+        
         // Icons
         this.lifeIcon = this.add.sprite(sizes.width - 113, 41, 'lifeIcon');
         this.dashIcon = this.add.sprite(50, 50, 'dashIcon').setScale(1.5);
+        this.add.image(sizes.width - 105, 103, 'levelIcon').setScale(3).setOrigin(0.5, 0);
         
         // Create overlap collider for when the player hitbox collides with the enemy hitbox
         EnemyFunctions.createEnemyHitCollider(this, this.enemies.getChildren(), this.player, music);

@@ -15,6 +15,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.damage = 10;
         this.velocity = 160;
         this.exp = 0;
+        this.nextLevelExp = 100;
+        this.level = 1;
         this.hp = 100;
         this.isAttacking = false;
         this.lastDirection = 'right';
@@ -247,7 +249,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                             this.scene.physics.add.overlap(this, gem, (player, gem) => {
                                 this.scene.sound.play('gemSound', false);
                                 this.exp += gem.exp;
-                                this.scene.expText.setText(`Exp: ${this.exp}`);
+                                if (this.exp >= this.nextLevelExp) {
+                                    this.level++;
+                                    this.nextLevelExp = this.nextLevelExp + 200;
+                                    this.exp = 0;
+                                    this.hp = 100;
+                                    this.scene.lifeText.setText(this.hp);
+                                    this.scene.levelText.setText(this.level);
+                                }
                                 gem.destroy();
                             });
 
