@@ -14,9 +14,9 @@ export function loadOrcSpritesheets(scene) {
     scene.load.spritesheet('orcWarriorDeath', "/assets/entities/Orc/Orc_Warrior/orc_warrior_death.png", { frameWidth: 64, frameHeight: 64 });
 
     // Orc Lord
-    scene.load.spritesheet('orcLordWalk', "/assets/entities/Orc/Orc_Lord/orc_lord_walk.png", { frameWidth: 64, frameHeight: 64 });
-    scene.load.spritesheet('orcLordHurt', "/assets/entities/Orc/Orc_Lord/orc_lord_hurt.png", { frameWidth: 64, frameHeight: 64 });
-    scene.load.spritesheet('orcLordDeath', "/assets/entities/Orc/Orc_Lord/orc_lord_death.png", { frameWidth: 64, frameHeight: 64 });
+    scene.load.spritesheet('orcLordWalk', "/assets/entities/Orc/Orc_lord/orc_lord_walk.png", { frameWidth: 64, frameHeight: 64 });
+    scene.load.spritesheet('orcLordHurt', "/assets/entities/Orc/Orc_lord/orc_lord_hurt.png", { frameWidth: 64, frameHeight: 64 });
+    scene.load.spritesheet('orcLordDeath', "/assets/entities/Orc/Orc_lord/orc_lord_death.png", { frameWidth: 64, frameHeight: 64 });
 }
 
 export function loadOrcAnimations(scene) {
@@ -85,7 +85,7 @@ export function createEnemyHitCollider(scene, enemies, player, music) {
             player.hp -= enemy.damage;
             player.hasBeenHit = true;
 
-            scene.time.delayedCall(200, () => {
+            scene.time.delayedCall(150, () => {
                 player.hasBeenHit = false;
             });
         } else if (player.hp <= 0) {

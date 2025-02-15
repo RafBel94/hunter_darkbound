@@ -30,6 +30,7 @@ class OrcVillageScene extends Phaser.Scene {
 
         // Preload background and misc assets
         this.load.image("orcVillageBackground", "assets/images/backgrounds/OrcVillageMapNight.png")
+        this.load.image("panel1", "assets/images/panels/panel1.png")
         this.load.image("panel1Double", "assets/images/panels/panel1-Double.png")
         this.load.image("levelIcon", "assets/images/icons/levelIcon.png")
         this.load.spritesheet("greenGem", "assets/images/items/greenGem.png", { frameWidth: 71, frameHeight: 139 });
@@ -53,6 +54,7 @@ class OrcVillageScene extends Phaser.Scene {
         this.load.audio('gemSound', ['assets/sounds/gem.mp3']);
         this.load.audio('playerHurt', ['assets/sounds/playerHurt.mp3']);
         this.load.audio('playerDeath', ['assets/sounds/playerDeathSound.mp3']);
+        this.load.audio('levelUpSound', ['assets/sounds/levelUpSound.mp3']);
         this.sound.volume = 0.5;
     }
 
@@ -97,16 +99,17 @@ class OrcVillageScene extends Phaser.Scene {
 
         // Panels
         this.add.image(sizes.width - 80, 10, 'panel1Double').setDisplaySize(140, 150).setOrigin(0.5, 0);
+        this.add.image(sizes.width / 2 + 40, 10, 'panel1').setDisplaySize(130, 75).setOrigin(0.5, 0);
         
         // Texts
         this.startTime = this.time.now;
-        this.clockText = this.add.bitmapText(sizes.width / 2, 20, 'pixelfont', "00:00", 40);
+        this.clockText = this.add.bitmapText(sizes.width / 2, 28, 'pixelfont', "00:00", 40);
         this.levelText = this.add.bitmapText(sizes.width - 59, 112, 'pixelfont', "1", 30).setOrigin(0.5, 0);
         this.lifeText = this.add.bitmapText(sizes.width - 59, 28, 'pixelfont', this.player.hp, 28).setOrigin(0.5, 0);
         
         // Icons
         this.lifeIcon = this.add.sprite(sizes.width - 113, 41, 'lifeIcon');
-        this.dashIcon = this.add.sprite(50, 50, 'dashIcon').setScale(1.5);
+        this.dashIcon = this.add.sprite(45, 45, 'dashIcon').setScale(2);
         this.add.image(sizes.width - 105, 103, 'levelIcon').setScale(3).setOrigin(0.5, 0);
         
         // Create overlap collider for when the player hitbox collides with the enemy hitbox
@@ -154,10 +157,10 @@ class OrcVillageScene extends Phaser.Scene {
             EnemyFunctions.spawnAdditionalEnemies(this);
         }
 
-        // Update player movement and attack
+        // Listen for player movement and attack
         this.player.updateMovementAndAttack(this.wasd, this.cursor.space);
 
-        // Player dash
+        // Listen for player dash
         this.player.dash(this.wasd, this.shift);
 
         // Update the clock

@@ -15,7 +15,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.damage = 10;
         this.velocity = 160;
         this.exp = 0;
-        this.nextLevelExp = 100;
+        this.nextLevelExp = 150;
         this.level = 1;
         this.hp = 100;
         this.isAttacking = false;
@@ -250,6 +250,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                                 this.scene.sound.play('gemSound', false);
                                 this.exp += gem.exp;
                                 if (this.exp >= this.nextLevelExp) {
+                                    this.scene.sound.play('levelUpSound', false)
                                     this.level++;
                                     this.nextLevelExp = this.nextLevelExp + 200;
                                     this.exp = 0;
@@ -272,6 +273,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                             this.scene.sound.play('hitSound2', false);
                             if (enemy instanceof OrcWarrior) {
                                 enemy.anims.play('orcWarriorHurt', true);
+                            } else if (enemy instanceof OrcLord) {
+                                enemy.anims.play('orcLordHurt', true)
                             }
                         }
                     }
