@@ -119,6 +119,7 @@ export function createEnemyHitCollider(scene, enemies, player, music) {
 
 // Spawn enemies depending of the type passed
 export function createEnemies(n, type, enemies, scene) {
+    if (scene.enemiesCanSpawn === false) return;
     for (let i = 0; i < n; i++) {
         let { x, y } = calculateSpawnZone();
 
@@ -141,6 +142,7 @@ export function createEnemies(n, type, enemies, scene) {
 }
 
 export function spawnEnemiesByMinute(scene, enemies) {
+    if (scene.enemiesCanSpawn === false) return;
     const enemyConfigurations = [
         { minute: 1, orcVillager: 20, orcWarrior: 0, orcLord: 0 },
         { minute: 2, orcVillager: 15, orcWarrior: 5, orcLord: 0 },
@@ -166,6 +168,7 @@ export function spawnEnemiesByMinute(scene, enemies) {
 }
 
 export function spawnAdditionalEnemies(scene) {
+    if (scene.enemiesCanSpawn === false) return;
     let minute = Math.floor((scene.time.now - scene.startTime) / 60000);
     let orcVillagerCount = 5;
     let orcWarriorCount = 0;
@@ -196,6 +199,53 @@ export function spawnAdditionalEnemies(scene) {
     createEnemies(orcVillagerCount, 'orcVillager', scene.enemies.getChildren(), scene);
     createEnemies(orcWarriorCount, 'orcWarrior', scene.enemies.getChildren(), scene);
     createEnemies(orcLordCount, 'orcLord', scene.enemies.getChildren(), scene);
+}
+
+export function spawnBoss(scene) {
+    scene.enemiesCanSpawn = false;
+    scene.isBossSpawned = true;
+
+    for (let enemy of scene.enemies.getChildren()) {
+        scene.sound.play('hitSound1', false);
+        enemy.setVelocity(0, 0);
+
+        if (enemy instanceof OrcVillager) {
+            enemy.anims.play('orcVillagerDeath', true);
+        } else if (enemy instanceof OrcWarrior) {
+            enemy.anims.play('orcWarriorDeath', true);
+        } else if (enemy instanceof OrcLord) {
+            enemy.anims.play('orcLordDeath', true);
+        }
+
+        enemy.once('animationcomplete', () => {
+            scene.time.delayedCall(400, () => {
+                if (enemy) {
+                    enemy.setVisible(false);
+                    scene.enemies.remove(enemy, true, true);
+                }
+            });
+        });
+
+
+        scene.physics.world.disable(enemy);
+    }
+
+    scene.tweens.add({
+        targets: scene.music,
+        volume: 0,
+        duration: 4000,
+        onComplete: () => {
+            scene.music.stop();
+        }
+    });
+
+    scene.time.delayedCall(5000, () => {
+        scene.sound.add('bossMusic', { loop: true, volume: 0.8 }).play();
+        let { x, y } = calculateSpawnZone();
+        let boss = new OrcLord(scene, x, y, { velocity: 100, hp: 200, damage: 20 }).setScale(4);
+        scene.enemies.add(boss);
+        scene.physics.add.collider(boss, scene.enemies);
+    });
 }
 
 // Calculate the spawn zone for the enemies

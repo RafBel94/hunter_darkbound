@@ -21,6 +21,9 @@ class OrcVillageScene extends Phaser.Scene {
         this.gems = []
         this.startTime = 0
         this.lastSpawnTime = 0
+        this.isBossSpawned = false
+        this.enemiesCanSpawn = true
+        this.music;
     }
 
     // This method preloads the assets
@@ -47,6 +50,7 @@ class OrcVillageScene extends Phaser.Scene {
 
         // Sounds
         this.load.audio('music', ['assets/sounds/music/music01.mp3']);
+        this.load.audio('bossMusic', ['assets/sounds/music/bossMusic01.mp3']);
         this.load.audio('swordAttackSound1', ['assets/sounds/sword-swing-1.ogg']);
         this.load.audio('hitSound1', ['assets/sounds/hit-flesh-01.mp3']);
         this.load.audio('hitSound2', ['assets/sounds/hit-flesh-02.mp3']);
@@ -59,8 +63,8 @@ class OrcVillageScene extends Phaser.Scene {
     }
 
     create() {
-        const music = this.sound.add('music', { loop: true, volume: 0.8 });
-        music.play();
+        this.music = this.sound.add('music', { loop: true, volume: 0.8 });
+        this.music.play();
 
         this.add.image(0, 0, "orcVillageBackground").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
         
@@ -113,7 +117,7 @@ class OrcVillageScene extends Phaser.Scene {
         this.add.image(sizes.width - 105, 103, 'levelIcon').setScale(3).setOrigin(0.5, 0);
         
         // Create overlap collider for when the player hitbox collides with the enemy hitbox
-        EnemyFunctions.createEnemyHitCollider(this, this.enemies.getChildren(), this.player, music);
+        EnemyFunctions.createEnemyHitCollider(this, this.enemies.getChildren(), this.player, this.music);
 
         this.lastSpawnTime = this.time.now;
 
@@ -127,9 +131,9 @@ class OrcVillageScene extends Phaser.Scene {
 
     // This method is called every frame and updates the game logic and objects
     update() {
-        // Pause the game
-        if (Phaser.Input.Keyboard.JustDown(this.escape)) {
-            this.scene.pause();
+        // Spawn boss
+        if (Math.floor((this.time.now - this.startTime) / 60000) === 1 && !this.isBossSpawned) {
+            EnemyFunctions.spawnBoss(this);
         }
 
         // Make every enemy follow the player
