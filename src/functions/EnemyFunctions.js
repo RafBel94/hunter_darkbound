@@ -219,13 +219,10 @@ export function spawnBoss(scene) {
 
         enemy.once('animationcomplete', () => {
             scene.time.delayedCall(400, () => {
-                if (enemy) {
-                    enemy.setVisible(false);
-                    scene.enemies.remove(enemy, true, true);
-                }
+                enemy.setVisible(false);
+                scene.enemies.remove(enemy, true, true);
             });
         });
-
 
         scene.physics.world.disable(enemy);
     }
@@ -242,7 +239,7 @@ export function spawnBoss(scene) {
     scene.time.delayedCall(5000, () => {
         scene.sound.add('bossMusic', { loop: true, volume: 0.8 }).play();
         let { x, y } = calculateSpawnZone();
-        let boss = new OrcLord(scene, x, y, { velocity: 100, hp: 200, damage: 20 }).setScale(4);
+        let boss = new OrcLord(scene, x, y, { velocity: 110, hp: 200, damage: 20 }).setScale(4);
         scene.enemies.add(boss);
         scene.physics.add.collider(boss, scene.enemies);
     });

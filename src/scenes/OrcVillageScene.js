@@ -41,7 +41,7 @@ class OrcVillageScene extends Phaser.Scene {
         this.load.spritesheet("yellowGem", "assets/images/items/yellowGem.png", { frameWidth: 71, frameHeight: 139 });
         this.load.spritesheet("lifeIcon", "assets/images/icons/lifeSprite.png", { frameWidth: 36, frameHeight: 36 });
         this.load.spritesheet("dashIcon", "assets/images/icons/dashIcon.png", { frameWidth: 34, frameHeight: 34 });
-        
+
         // Preload player animations
         PlayerFunctions.loadPlayerSpritesheets(this);
 
@@ -67,26 +67,26 @@ class OrcVillageScene extends Phaser.Scene {
         this.music.play();
 
         this.add.image(0, 0, "orcVillageBackground").setOrigin(0, 0).setDisplaySize(sizes.width, sizes.height).setOrigin(0, 0)
-        
+
         // Enemy functions
         EnemyFunctions.loadOrcAnimations(this);
-        
+
         // Create player animations
         PlayerFunctions.loadPlayerAnimations(this);
-        
+
         // Player creation
         this.player = new Player(this, sizes.width / 2, sizes.height / 2);
-        
+
         // Create a physics group for enemies
         this.enemies = this.physics.add.group();
-        
+
         // Enemy creation
         EnemyFunctions.createEnemies(20, 'orcVillager', this.enemies, this);
-        
-        
+
+
         // Create cursor keys for player movement
         this.cursor = this.input.keyboard.createCursorKeys();
-        
+
         // Create WASD keys for player movement
         this.wasd = this.input.keyboard.addKeys({
             up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -94,28 +94,28 @@ class OrcVillageScene extends Phaser.Scene {
             left: Phaser.Input.Keyboard.KeyCodes.A,
             right: Phaser.Input.Keyboard.KeyCodes.D
         });
-        
+
         // Create shift key for player dashing
         this.shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
-        
+
         // Create Escape key to pause the game
         this.escape = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
         // Panels
         this.add.image(sizes.width - 80, 10, 'panel1Double').setDisplaySize(140, 150).setOrigin(0.5, 0);
         this.add.image(sizes.width / 2 + 40, 10, 'panel1').setDisplaySize(130, 75).setOrigin(0.5, 0);
-        
+
         // Texts
         this.startTime = this.time.now;
         this.clockText = this.add.bitmapText(sizes.width / 2, 28, 'pixelfont', "00:00", 40);
         this.levelText = this.add.bitmapText(sizes.width - 59, 112, 'pixelfont', "1", 30).setOrigin(0.5, 0);
         this.lifeText = this.add.bitmapText(sizes.width - 59, 28, 'pixelfont', this.player.hp, 28).setOrigin(0.5, 0);
-        
+
         // Icons
         this.lifeIcon = this.add.sprite(sizes.width - 113, 41, 'lifeIcon');
         this.dashIcon = this.add.sprite(45, 45, 'dashIcon').setScale(2);
         this.add.image(sizes.width - 105, 103, 'levelIcon').setScale(3).setOrigin(0.5, 0);
-        
+
         // Create overlap collider for when the player hitbox collides with the enemy hitbox
         EnemyFunctions.createEnemyHitCollider(this, this.enemies.getChildren(), this.player, this.music);
 
@@ -137,17 +137,19 @@ class OrcVillageScene extends Phaser.Scene {
         }
 
         // Make every enemy follow the player
-        this.enemies.children.iterate(enemy => {
-            if (enemy.hp > 0 && enemy.hasBeenHit === false) {
-                if (enemy instanceof OrcVillager) {
-                    enemy.followPlayer(this.player, 'orcVillagerWalk');
-                } else if (enemy instanceof OrcWarrior) {
-                    enemy.followPlayer(this.player, 'orcWarriorWalk');
-                } else if (enemy instanceof OrcLord) {
-                    enemy.followPlayer(this.player, 'orcLordWalk');
+        if (!this.isBossSpawned) {
+            this.enemies.children.iterate(enemy => {
+                if (enemy.hp > 0 && enemy.hasBeenHit === false) {
+                    if (enemy instanceof OrcVillager) {
+                        enemy.followPlayer(this.player, 'orcVillagerWalk');
+                    } else if (enemy instanceof OrcWarrior) {
+                        enemy.followPlayer(this.player, 'orcWarriorWalk');
+                    } else if (enemy instanceof OrcLord) {
+                        enemy.followPlayer(this.player, 'orcLordWalk');
+                    }
                 }
-            }
-        });
+            });
+        }
 
         // Check if there's not enough enemies on the screen
         if (this.enemies.children.size < 13) {
