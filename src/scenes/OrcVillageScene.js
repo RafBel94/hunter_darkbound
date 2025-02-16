@@ -133,7 +133,7 @@ class OrcVillageScene extends Phaser.Scene {
     // This method is called every frame and updates the game logic and objects
     update() {
         // Spawn boss
-        if (Math.floor((this.time.now - this.startTime) / 60000) === 1 && !this.isBossSpawned) {
+        if (Math.floor((this.time.now - this.startTime) / 600000) === 1 && !this.isBossSpawned) {
             EnemyFunctions.spawnBoss(this);
         }
 
