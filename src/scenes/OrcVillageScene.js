@@ -3,6 +3,7 @@ import Player from '../entities/Player.js'
 import OrcVillager from '../entities/OrcVillager.js'
 import OrcWarrior from '../entities/OrcWarrior.js'
 import OrcLord from '../entities/OrcLord.js'
+import OrcBoss from '../entities/OrcBoss.js'
 import { sizes } from '../config/config.js'
 import * as EnemyFunctions from '../functions/EnemyFunctions.js'
 import * as PlayerFunctions from '../functions/PlayerFunctions.js'
@@ -117,7 +118,7 @@ class OrcVillageScene extends Phaser.Scene {
         this.add.image(sizes.width - 105, 103, 'levelIcon').setScale(3).setOrigin(0.5, 0);
 
         // Create overlap collider for when the player hitbox collides with the enemy hitbox
-        EnemyFunctions.createEnemyHitCollider(this, this.enemies.getChildren(), this.player, this.music);
+        EnemyFunctions.createEnemyHitCollider(this, this.enemies.getChildren(), this.player);
 
         this.lastSpawnTime = this.time.now;
 
@@ -137,9 +138,13 @@ class OrcVillageScene extends Phaser.Scene {
         }
 
         // Make every enemy follow the player
-        if (!this.isBossSpawned) {
-            this.enemies.children.iterate(enemy => {
-                if (enemy.hp > 0 && enemy.hasBeenHit === false) {
+        this.enemies.children.iterate(enemy => {
+            if (enemy.hp > 0 && enemy.hasBeenHit === false) {
+                if (this.isBossSpawned) {
+                    if (enemy instanceof OrcBoss) {
+                        enemy.followPlayer(this.player, 'orcLordWalk');
+                    }
+                } else {
                     if (enemy instanceof OrcVillager) {
                         enemy.followPlayer(this.player, 'orcVillagerWalk');
                     } else if (enemy instanceof OrcWarrior) {
@@ -148,8 +153,8 @@ class OrcVillageScene extends Phaser.Scene {
                         enemy.followPlayer(this.player, 'orcLordWalk');
                     }
                 }
-            });
-        }
+            }
+        });
 
         // Check if there's not enough enemies on the screen
         if (this.enemies.children.size < 13) {

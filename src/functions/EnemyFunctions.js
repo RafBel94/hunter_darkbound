@@ -2,6 +2,7 @@ import { sizes, difficulty } from '../config/config.js';
 import OrcVillager from '../entities/OrcVillager.js';
 import OrcWarrior from '../entities/OrcWarrior.js';
 import OrcLord from '../entities/OrcLord.js';
+import OrcBoss from '../entities/OrcBoss.js';
 
 export function loadOrcSpritesheets(scene) {
     // Orc Villager
@@ -76,7 +77,7 @@ export function loadOrcAnimations(scene) {
 }
 
 // Create overlap collider for when any enemy hitbox collides with the player hitbox
-export function createEnemyHitCollider(scene, enemies, player, music) {
+export function createEnemyHitCollider(scene, enemies, player) {
     scene.physics.add.overlap(player, enemies, (player, enemy) => {
         if (!player.hasBeenHit && player.hp > 0) {
             scene.lifeIcon.anims.play('lifeIconShake', true);
@@ -98,11 +99,11 @@ export function createEnemyHitCollider(scene, enemies, player, music) {
 
             // Fade out the music and stop it
             scene.tweens.add({
-                targets: music,
+                targets: scene.music,
                 volume: 0,
                 duration: 4000,
                 onComplete: () => {
-                    music.stop();
+                    scene.music.stop();
                 }
             });
 
@@ -237,9 +238,9 @@ export function spawnBoss(scene) {
     });
 
     scene.time.delayedCall(5000, () => {
-        scene.sound.add('bossMusic', { loop: true, volume: 0.8 }).play();
+        scene.music = scene.sound.add('bossMusic', { loop: true, volume: 0.8 }).play();
         let { x, y } = calculateSpawnZone();
-        let boss = new OrcLord(scene, x, y, { velocity: 110, hp: 200, damage: 20 }).setScale(4);
+        let boss = new OrcBoss(scene, x, y);
         scene.enemies.add(boss);
         scene.physics.add.collider(boss, scene.enemies);
     });

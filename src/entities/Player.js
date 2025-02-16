@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import OrcVillager from '../entities/OrcVillager.js'
 import OrcWarrior from '../entities/OrcWarrior.js'
 import OrcLord from '../entities/OrcLord.js'
+import OrcBoss from '../entities/OrcBoss.js'
 import GreenGem from '../items/GreenGem.js'
 import BlueGem from '../items/BlueGem.js'
 import YellowGem from '../items/YellowGem.js'
@@ -227,7 +228,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                                 enemy.anims.play('orcVillagerDeath', true);
                             } else if (enemy instanceof OrcWarrior) {
                                 enemy.anims.play('orcWarriorDeath', true);
-                            } else if (enemy instanceof OrcLord) {
+                            } else if (enemy instanceof OrcLord || enemy instanceof OrcBoss) {
                                 enemy.anims.play('orcLordDeath', true);
                             }
 
@@ -240,7 +241,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                                 gem = new GreenGem(this.scene, enemy.x, enemy.y, 'greenGem', 0).setDisplaySize(10,14).setSize(300,350);
                             } else if (enemy instanceof OrcWarrior) {
                                 gem = new BlueGem(this.scene, enemy.x, enemy.y, 'blueGem', 0).setDisplaySize(10,14);
-                            } else if (enemy instanceof OrcLord) {
+                            } else if (enemy instanceof OrcLord || enemy instanceof OrcBoss) {
                                 gem = new YellowGem(this.scene, enemy.x, enemy.y, 'yellowGem', 0).setDisplaySize(10,14);
                             }
                             this.scene.gems.push(gem);
@@ -273,7 +274,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                             this.scene.sound.play('hitSound2', false);
                             if (enemy instanceof OrcWarrior) {
                                 enemy.anims.play('orcWarriorHurt', true);
-                            } else if (enemy instanceof OrcLord) {
+                            } else if (enemy instanceof OrcLord || enemy instanceof OrcBoss) {
                                 enemy.anims.play('orcLordHurt', true)
                             }
                         }
